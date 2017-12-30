@@ -1,6 +1,6 @@
 ﻿namespace GUI
 {
-    partial class Form1
+    partial class Main
     {
         /// <summary>
         /// Required designer variable.
@@ -37,6 +37,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.Info = new System.Windows.Forms.GroupBox();
+            this.URL = new System.Windows.Forms.LinkLabel();
+            this.label10 = new System.Windows.Forms.Label();
             this.description = new System.Windows.Forms.Label();
             this.size = new System.Windows.Forms.Label();
             this.md5 = new System.Windows.Forms.Label();
@@ -47,15 +49,17 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.URL = new System.Windows.Forms.LinkLabel();
+            this.RepoBox = new System.Windows.Forms.ListBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.RefreshBar = new System.Windows.Forms.ProgressBar();
+            this.label11 = new System.Windows.Forms.Label();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
             // Reponame
             // 
             this.Reponame.AutoSize = true;
-            this.Reponame.Location = new System.Drawing.Point(12, 9);
+            this.Reponame.Location = new System.Drawing.Point(386, 9);
             this.Reponame.Name = "Reponame";
             this.Reponame.Size = new System.Drawing.Size(118, 13);
             this.Reponame.TabIndex = 0;
@@ -63,7 +67,7 @@
             // 
             // EnterRepo
             // 
-            this.EnterRepo.Location = new System.Drawing.Point(12, 629);
+            this.EnterRepo.Location = new System.Drawing.Point(527, 630);
             this.EnterRepo.Name = "EnterRepo";
             this.EnterRepo.Size = new System.Drawing.Size(207, 20);
             this.EnterRepo.TabIndex = 1;
@@ -71,17 +75,18 @@
             // 
             // Refresh
             // 
-            this.Refresh.Location = new System.Drawing.Point(547, 629);
+            this.Refresh.Location = new System.Drawing.Point(1062, 629);
             this.Refresh.Name = "Refresh";
             this.Refresh.Size = new System.Drawing.Size(75, 20);
             this.Refresh.TabIndex = 2;
-            this.Refresh.Text = "Load";
+            this.Refresh.Text = "Add";
             this.Refresh.UseVisualStyleBackColor = true;
             this.Refresh.Click += new System.EventHandler(this.Refresh_Click);
             // 
             // RefreshProgress
             // 
-            this.RefreshProgress.Location = new System.Drawing.Point(225, 629);
+            this.RefreshProgress.Location = new System.Drawing.Point(740, 629);
+            this.RefreshProgress.MarqueeAnimationSpeed = 1;
             this.RefreshProgress.Name = "RefreshProgress";
             this.RefreshProgress.Size = new System.Drawing.Size(316, 20);
             this.RefreshProgress.TabIndex = 3;
@@ -90,9 +95,9 @@
             // 
             this.Packages.CheckOnClick = true;
             this.Packages.FormattingEnabled = true;
-            this.Packages.Location = new System.Drawing.Point(15, 26);
+            this.Packages.Location = new System.Drawing.Point(389, 26);
             this.Packages.Name = "Packages";
-            this.Packages.Size = new System.Drawing.Size(261, 559);
+            this.Packages.Size = new System.Drawing.Size(402, 574);
             this.Packages.TabIndex = 4;
             this.Packages.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.Packages_ItemCheck_1);
             // 
@@ -168,12 +173,32 @@
             this.Info.Controls.Add(this.packageid);
             this.Info.Controls.Add(this.label2);
             this.Info.Controls.Add(this.name);
-            this.Info.Location = new System.Drawing.Point(282, 26);
+            this.Info.Location = new System.Drawing.Point(797, 26);
             this.Info.Name = "Info";
             this.Info.Size = new System.Drawing.Size(340, 353);
             this.Info.TabIndex = 11;
             this.Info.TabStop = false;
             this.Info.Text = "Info";
+            // 
+            // URL
+            // 
+            this.URL.AutoSize = true;
+            this.URL.Location = new System.Drawing.Point(42, 94);
+            this.URL.Name = "URL";
+            this.URL.Size = new System.Drawing.Size(29, 13);
+            this.URL.TabIndex = 19;
+            this.URL.TabStop = true;
+            this.URL.Text = "URL";
+            this.URL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.URL_LinkClicked);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(6, 94);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(32, 13);
+            this.label10.TabIndex = 18;
+            this.label10.Text = "URL:";
             // 
             // description
             // 
@@ -249,7 +274,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(15, 610);
+            this.label8.Location = new System.Drawing.Point(527, 614);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(33, 13);
             this.label8.TabIndex = 12;
@@ -258,38 +283,58 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(225, 609);
+            this.label9.Location = new System.Drawing.Point(737, 613);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(48, 13);
+            this.label9.Size = new System.Drawing.Size(56, 13);
             this.label9.TabIndex = 13;
-            this.label9.Text = "Progress";
+            this.label9.Text = "Repo load";
             // 
-            // label10
+            // RepoBox
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 94);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(32, 13);
-            this.label10.TabIndex = 18;
-            this.label10.Text = "URL:";
+            this.RepoBox.FormattingEnabled = true;
+            this.RepoBox.Location = new System.Drawing.Point(12, 26);
+            this.RepoBox.Name = "RepoBox";
+            this.RepoBox.Size = new System.Drawing.Size(371, 576);
+            this.RepoBox.TabIndex = 14;
+            this.RepoBox.SelectedValueChanged += new System.EventHandler(this.RepoBox_SelectedValueChanged);
             // 
-            // URL
+            // button1
             // 
-            this.URL.AutoSize = true;
-            this.URL.Location = new System.Drawing.Point(42, 94);
-            this.URL.Name = "URL";
-            this.URL.Size = new System.Drawing.Size(29, 13);
-            this.URL.TabIndex = 19;
-            this.URL.TabStop = true;
-            this.URL.Text = "URL";
-            this.URL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.URL_LinkClicked);
+            this.button1.Location = new System.Drawing.Point(12, 629);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 15;
+            this.button1.Text = "Refresh";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // Form1
+            // RefreshBar
+            // 
+            this.RefreshBar.Location = new System.Drawing.Point(93, 630);
+            this.RefreshBar.MarqueeAnimationSpeed = 1;
+            this.RefreshBar.Name = "RefreshBar";
+            this.RefreshBar.Size = new System.Drawing.Size(428, 23);
+            this.RefreshBar.TabIndex = 16;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(93, 614);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(71, 13);
+            this.label11.TabIndex = 17;
+            this.label11.Text = "Total Refresh";
+            // 
+            // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(634, 661);
+            this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.RefreshBar);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.RepoBox);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.Info);
@@ -301,7 +346,7 @@
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.HelpButton = true;
-            this.Name = "Form1";
+            this.Name = "Main";
             this.Text = "RepositoryExplorer";
             this.Info.ResumeLayout(false);
             this.Info.PerformLayout();
@@ -336,6 +381,10 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.LinkLabel URL;
         private System.Windows.Forms.Label label10;
+        public System.Windows.Forms.ListBox RepoBox;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.ProgressBar RefreshBar;
+        private System.Windows.Forms.Label label11;
     }
 }
 

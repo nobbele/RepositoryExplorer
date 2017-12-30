@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace CydiaForWindows
 {
     [Serializable]
-    class Package
+    public class Package
     {
-        public Dictionary<string, string> data;
+        public SerializableDictionaryString data;
         public string url;
         public string name;
         public string package;
@@ -16,9 +16,14 @@ namespace CydiaForWindows
         public int size;
         public string md5;
         public string description;
-        public Package(Dictionary<string, string> _data, string url) {
+        public Package() {
+
+        }
+        public Package(SerializableDictionaryString _data, string url) {
 
             this.data = _data;
+            
+
             bool success = this.data.TryGetValue("Filename", out this.url);
             if (success)
                 this.url = (url.EndsWith("/") ? url : url + "/") + this.url;
