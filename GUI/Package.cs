@@ -1,8 +1,7 @@
 ﻿
 using System;
-using System.Collections.Generic;
 
-namespace CydiaForWindows
+namespace GUI
 {
     [Serializable]
     public class Package

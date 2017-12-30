@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace CydiaForWindows
+namespace GUI
 {
     [Serializable]
     public class Repo

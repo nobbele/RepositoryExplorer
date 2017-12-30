@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CydiaForWindows
+namespace GUI
 {
     class Helper
     {
