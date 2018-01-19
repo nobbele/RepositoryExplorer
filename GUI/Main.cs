@@ -211,7 +211,7 @@ namespace GUI
             if (rep != null) {
                 Packages.Items.Clear();
                 foreach (Package pak in rep.packages.Values) {
-                    if (pak != null && pak.ToString().Contains(search.Text)) {
+                    if (pak != null && pak.ToString().ToLower().Contains(search.Text.ToLower())) {
                         Packages.Items.Add(pak);
                     }
                 }
