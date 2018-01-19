@@ -18,10 +18,10 @@ namespace GUI
                 //try {
                 try {
                     wc.DownloadFile(file, name);
-                } catch (System.Net.WebException) {
+                } catch (System.Net.WebException ex) {
                     
                 } catch (System.ArgumentException ex) {
-
+                    
                 }
                 /*} catch (System.Net.WebException e) {
                     Console.WriteLine("Error occured: " + e.Message);

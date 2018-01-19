@@ -53,6 +53,8 @@
             this.button1 = new System.Windows.Forms.Button();
             this.RefreshBar = new System.Windows.Forms.ProgressBar();
             this.label11 = new System.Windows.Forms.Label();
+            this.search = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -97,7 +99,7 @@
             this.Packages.FormattingEnabled = true;
             this.Packages.Location = new System.Drawing.Point(389, 26);
             this.Packages.Name = "Packages";
-            this.Packages.Size = new System.Drawing.Size(402, 574);
+            this.Packages.Size = new System.Drawing.Size(402, 544);
             this.Packages.TabIndex = 4;
             this.Packages.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.Packages_ItemCheck_1);
             // 
@@ -325,12 +327,31 @@
             this.label11.TabIndex = 17;
             this.label11.Text = "Total Refresh";
             // 
+            // search
+            // 
+            this.search.Location = new System.Drawing.Point(437, 576);
+            this.search.Name = "search";
+            this.search.Size = new System.Drawing.Size(354, 20);
+            this.search.TabIndex = 18;
+            this.search.TextChanged += new System.EventHandler(this.search_TextChanged);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(390, 579);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(41, 13);
+            this.label12.TabIndex = 19;
+            this.label12.Text = "Search";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.search);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.RefreshBar);
             this.Controls.Add(this.button1);
@@ -385,6 +406,8 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ProgressBar RefreshBar;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox search;
+        private System.Windows.Forms.Label label12;
     }
 }
 

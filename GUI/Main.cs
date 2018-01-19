@@ -12,6 +12,7 @@ namespace GUI
     {
         Dictionary<string, Package> selected;
         List<Repo> repos;
+        Repo rep;
         public Main() {
             InitializeComponent();
             repos = new List<Repo>();
@@ -110,7 +111,8 @@ namespace GUI
         private void ViewRepo() {
             int index = RepoBox.SelectedIndex;
             if (index < 0) index = 0;
-            Repo rep = repos[index];
+            if (index >= repos.Count) index = repos.Count;
+            rep = repos[index];
 
             Reponame.Text = rep.name;
             Packages.Items.Clear();
@@ -203,6 +205,17 @@ namespace GUI
 
         private void button1_Click(object sender, EventArgs e) {
             RefreshAll();
+        }
+
+        private void search_TextChanged(object sender, EventArgs e) {
+            if (rep != null) {
+                Packages.Items.Clear();
+                foreach (Package pak in rep.packages.Values) {
+                    if (pak != null && pak.ToString().Contains(search.Text)) {
+                        Packages.Items.Add(pak);
+                    }
+                }
+            }
         }
     }
 }
