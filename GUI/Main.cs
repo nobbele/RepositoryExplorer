@@ -87,7 +87,7 @@ namespace GUI
             List<string> reponames = new List<string>();
 
             foreach(Repo r in repos) {
-                reponames.Add(r.name);
+                reponames.Add(r.url);
             }
             repos.Clear();
             RefreshBar.Value = 0;
