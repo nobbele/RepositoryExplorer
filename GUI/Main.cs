@@ -63,6 +63,8 @@ namespace GUI
                 try {
                     string data = path + "/data.repodata";
                     Repo toadd = ObjectSaver.ReadFromXmlFile<Repo>(data);
+                    toadd.selected = new List<Package>();
+                    toadd.sel = new List<Package>();
                     repos.Add(toadd);
                 } catch (FileNotFoundException ex) {
                     File.Delete(n);
@@ -119,7 +121,8 @@ namespace GUI
             if (rep.packages != null) {
                 foreach (Package pak in rep.packages.Values) {
                     int i = Packages.Items.Add(pak);
-                    if (rep.selected.Contains(pak)) {
+                    List<Package> sel = rep.selected;
+                    if (sel.Contains(pak)) {
                         Packages.SetItemChecked(i, true);
                     }
                 }
@@ -146,6 +149,13 @@ namespace GUI
                     selected.Remove(packtochange.name);
                 selected.Add(packtochange.name, packtochange);
             } else selected.Remove(packtochange.name);
+            if (!rep.sel.Contains(packtochange)) {
+                rep.sel.Add(packtochange);
+            } else {
+                if (e.CurrentValue == CheckState.Checked) {
+                    rep.sel.Remove(packtochange);
+                }
+            }
 
             int selind = RepoBox.SelectedIndex;
             if (selind < 0) selind = 0;
@@ -226,15 +236,19 @@ namespace GUI
         }
         // Download all
         private void button2_Click(object sender, EventArgs e) {
-            Downloadprogress.SetProgressNoAnimation(0);
-            foreach (Repo r in repos) {
+            foreach (Repo re in repos) {
                 Downloadprogress.SetProgressNoAnimation(0);
-                int toadd = 100 / r.selected.Count;
-                foreach (Package p in r.selected) {
-                    p.download();
-                    int newval = Downloadprogress.Value + toadd;
-                    if (newval > 100) newval = 100;
-                    Downloadprogress.SetProgressNoAnimation(newval);
+                if (re.selected.Count > 0) {
+                    int toadd = 100 / re.sel.Count;
+                    foreach (Package p in re.sel) {
+                        if (p != null) {
+                            Console.WriteLine(p);
+                            p.download();
+                            int newval = Downloadprogress.Value + toadd;
+                            if (newval > 100) newval = 100;
+                            Downloadprogress.SetProgressNoAnimation(newval);
+                        }
+                    }
                 }
             }
             Downloadprogress.SetProgressNoAnimation(100);
@@ -242,15 +256,24 @@ namespace GUI
 
         private void button3_Click(object sender, EventArgs e) {
             Package p = Packages.SelectedItem as Package;
-            p.download();
+            if (p != null) {
+                p.download();
+            } else {
+                MessageBox.Show("No package selected (you must double click on a package to select it");
+            }
         }
 
         private void Packages_SelectedIndexChanged(object sender, EventArgs e) {
-            //rep.selected.Add(Packages.SelectedItem as Package);
+            rep.selected.Add(Packages.SelectedItem as Package);
             int selind = RepoBox.SelectedIndex;
             if (selind < 0) selind = 0;
             Repo r = repos[selind];
-            Package pak = r.packages.Values.ToArray<Package>()[Packages.SelectedIndex];
+            Package pak;
+            try {
+                pak = r.packages.Values.ToArray<Package>()[Packages.SelectedIndex];
+            } catch (IndexOutOfRangeException ex) {
+                pak = r.packages.Values.Last<Package>();
+            }
             name.Text = pak.name;
             packageid.Text = pak.package;
             section.Text = pak.section;

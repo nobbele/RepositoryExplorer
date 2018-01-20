@@ -2,13 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace GUI
 {
     [Serializable]
     public class Repo
     {
+        //[XmlIgnore]
         public List<Package> selected;
+        //[XmlIgnore]
+        public List<Package> sel;
+
         public SerializableDictionary<string, Package> packages;
         public SerializableDictionaryString data;
         public string url;
@@ -19,6 +24,7 @@ namespace GUI
         }
         public Repo(string url, ProgressBar RefreshProgress) {
             selected = new List<Package>();
+            sel = new List<Package>();
             RefreshProgress.SetProgressNoAnimation(0);
             this.url = url;
 

@@ -59,6 +59,11 @@ namespace GUI
         public override string ToString() {
             return this.name;
         }
+        public override bool Equals(object obj) {
+            Package p = obj as Package;
+            if (p == null) return false;
+            return (this.name == p.name);
+        }
         public void download() {
             Helper.Download(this.url, "debs/" + this.package + ".deb");
         }
