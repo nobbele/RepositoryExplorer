@@ -10,7 +10,7 @@ namespace GUI
 {
     class Helper
     {
-        public const bool debug = true;
+        public const bool debug = false;
         public static FileInfo Download(string file, string name) {
             string[] dir = name.Split('/');
             if(dir.Length > 1) Directory.CreateDirectory(dir[0]);
@@ -166,6 +166,63 @@ namespace GUI
             foreach (string folder in folders) {
                 CompressFolder(folder, zipStream, folderOffset);
             }
+        }
+        public static bool Versioncheck(string newer, string older) {
+            string[] newpak = newer.Split(new String[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+            string[] oldpak = older.Split(new String[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+
+            int newmajor = 0;
+            int oldmajor = 0;
+            int newminor = 0;
+            int oldminor = 0;
+            int newpatch = 0;
+            int oldpatch = 0;
+
+            for (int i = 0; i < newpak.Length; i++) {
+                switch (i) {
+                    case 0:
+                        int.TryParse(newpak[i], out newmajor);
+                        break;
+                    case 1:
+                        int.TryParse(newpak[i], out newminor);
+                        break;
+                    case 2:
+                        int.TryParse(newpak[i], out newpatch);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            for (int i = 0; i < oldpak.Length; i++) {
+                switch (i) {
+                    case 0:
+                        int.TryParse(oldpak[i], out oldmajor);
+                        break;
+                    case 1:
+                        int.TryParse(oldpak[i], out oldminor);
+                        break;
+                    case 2:
+                        int.TryParse(oldpak[i], out oldpatch);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (newmajor > oldmajor) {
+                return true;
+            } else if (newmajor == oldmajor) {
+                // do more checking
+                if (newminor > oldminor) {
+                    return true;
+                } else if (newminor == oldminor) {
+                    // do more checking
+                    if (newpatch > oldpatch) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

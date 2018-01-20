@@ -14,6 +14,7 @@ namespace GUI
         public string depends;
         public int size;
         public string md5;
+        public string version;
         public string description;
         public Package() {
 
@@ -36,6 +37,7 @@ namespace GUI
             if (!this.data.TryGetValue("Package", out this.package)) print("No package id for {0}", this.name);
             if (!this.data.TryGetValue("Section", out this.section)) print("No section for {0}", this.name);
             if (!this.data.TryGetValue("Depends", out this.depends)) print("No depends for {0}", this.name);
+            if (!this.data.TryGetValue("Version", out this.version)) print("No depends for {0}", this.name);
             string _size = "";
             this.data.TryGetValue("Size", out _size);
             if (!int.TryParse(_size, out this.size))
@@ -56,6 +58,9 @@ namespace GUI
         }
         public override string ToString() {
             return this.name;
+        }
+        public void download() {
+            Helper.Download(this.url, "debs/" + this.package + ".deb");
         }
     }
 }

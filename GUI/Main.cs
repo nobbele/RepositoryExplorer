@@ -118,7 +118,10 @@ namespace GUI
             Packages.Items.Clear();
             if (rep.packages != null) {
                 foreach (Package pak in rep.packages.Values) {
-                    Packages.Items.Add(pak);
+                    int i = Packages.Items.Add(pak);
+                    if (rep.selected.Contains(pak)) {
+                        Packages.SetItemChecked(i, true);
+                    }
                 }
             }
         }
@@ -138,10 +141,16 @@ namespace GUI
         private void Packages_ItemCheck_1(object sender, ItemCheckEventArgs e) {
 
             Package packtochange = (Package)Packages.Items[e.Index];
-            if (e.CurrentValue == CheckState.Unchecked) selected.Add(packtochange.name, packtochange);
-            else selected.Remove(packtochange.name);
+            if (e.CurrentValue == CheckState.Unchecked) {
+                if (selected.ContainsKey(packtochange.name))
+                    selected.Remove(packtochange.name);
+                selected.Add(packtochange.name, packtochange);
+            } else selected.Remove(packtochange.name);
 
-            Package pak = repos[RepoBox.SelectedIndex].packages.Values.ToArray<Package>()[e.Index];
+            int selind = RepoBox.SelectedIndex;
+            if (selind < 0) selind = 0;
+            Repo r = repos[selind];
+            Package pak = r.packages.Values.ToArray<Package>()[e.Index];
             name.Text = pak.name;
             packageid.Text = pak.package;
             section.Text = pak.section;
@@ -150,6 +159,7 @@ namespace GUI
             description.Text = pak.description;
             depends.Text = pak.depends;
             URL.Text = pak.url;
+            version.Text = pak.version;
             URL.LinkVisited = false;
         }
         protected override void OnClosed(EventArgs e) {
@@ -161,9 +171,6 @@ namespace GUI
 
                     //Fix for coolstar's weird description
                     string orig = File.ReadAllText(dataname);
-
-                    
-
                     File.Delete(dataname);
                     File.WriteAllText(dataname, orig);
                     
@@ -216,6 +223,30 @@ namespace GUI
                     }
                 }
             }
+        }
+        // Download all
+        private void button2_Click(object sender, EventArgs e) {
+            Downloadprogress.SetProgressNoAnimation(0);
+            foreach (Repo r in repos) {
+                Downloadprogress.SetProgressNoAnimation(0);
+                int toadd = 100 / r.selected.Count;
+                foreach (Package p in r.selected) {
+                    p.download();
+                    int newval = Downloadprogress.Value + toadd;
+                    if (newval > 100) newval = 100;
+                    Downloadprogress.SetProgressNoAnimation(newval);
+                }
+            }
+            Downloadprogress.SetProgressNoAnimation(100);
+        }
+
+        private void button3_Click(object sender, EventArgs e) {
+            Package p = Packages.SelectedItem as Package;
+            p.download();
+        }
+
+        private void Packages_SelectedIndexChanged(object sender, EventArgs e) {
+            rep.selected.Add(Packages.SelectedItem as Package);
         }
     }
 }

@@ -55,6 +55,12 @@
             this.label11 = new System.Windows.Forms.Label();
             this.search = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.Downloadprogress = new System.Windows.Forms.ProgressBar();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.version = new System.Windows.Forms.Label();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -102,6 +108,7 @@
             this.Packages.Size = new System.Drawing.Size(402, 544);
             this.Packages.TabIndex = 4;
             this.Packages.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.Packages_ItemCheck_1);
+            this.Packages.SelectedIndexChanged += new System.EventHandler(this.Packages_SelectedIndexChanged);
             // 
             // name
             // 
@@ -159,6 +166,8 @@
             // 
             // Info
             // 
+            this.Info.Controls.Add(this.version);
+            this.Info.Controls.Add(this.label14);
             this.Info.Controls.Add(this.URL);
             this.Info.Controls.Add(this.label10);
             this.Info.Controls.Add(this.description);
@@ -204,7 +213,7 @@
             // 
             // description
             // 
-            this.description.Location = new System.Drawing.Point(75, 107);
+            this.description.Location = new System.Drawing.Point(75, 120);
             this.description.Name = "description";
             this.description.Size = new System.Drawing.Size(259, 246);
             this.description.TabIndex = 17;
@@ -240,7 +249,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 107);
+            this.label7.Location = new System.Drawing.Point(6, 120);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(63, 13);
             this.label7.TabIndex = 13;
@@ -344,12 +353,70 @@
             this.label12.TabIndex = 19;
             this.label12.Text = "Search";
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(797, 546);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(125, 23);
+            this.button2.TabIndex = 20;
+            this.button2.Text = "Download All Selected";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(928, 546);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(128, 23);
+            this.button3.TabIndex = 21;
+            this.button3.Text = "Download Current";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // Downloadprogress
+            // 
+            this.Downloadprogress.Location = new System.Drawing.Point(798, 517);
+            this.Downloadprogress.Name = "Downloadprogress";
+            this.Downloadprogress.Size = new System.Drawing.Size(258, 23);
+            this.Downloadprogress.TabIndex = 22;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(798, 498);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(99, 13);
+            this.label13.TabIndex = 23;
+            this.label13.Text = "Download Progress";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(7, 107);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(45, 13);
+            this.label14.TabIndex = 20;
+            this.label14.Text = "Version:";
+            // 
+            // version
+            // 
+            this.version.AutoSize = true;
+            this.version.Location = new System.Drawing.Point(58, 107);
+            this.version.Name = "version";
+            this.version.Size = new System.Drawing.Size(42, 13);
+            this.version.TabIndex = 21;
+            this.version.Text = "Version";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.Downloadprogress);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.search);
             this.Controls.Add(this.label11);
@@ -408,6 +475,12 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox search;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ProgressBar Downloadprogress;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label version;
+        private System.Windows.Forms.Label label14;
     }
 }
 

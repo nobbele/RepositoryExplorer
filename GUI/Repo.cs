@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -7,14 +8,17 @@ namespace GUI
     [Serializable]
     public class Repo
     {
+        public List<Package> selected;
         public SerializableDictionary<string, Package> packages;
         public SerializableDictionaryString data;
         public string url;
         public string name;
+        public bool defaultsource;
         public Repo() {
             
         }
         public Repo(string url, ProgressBar RefreshProgress) {
+            selected = new List<Package>();
             RefreshProgress.SetProgressNoAnimation(0);
             this.url = url;
 
@@ -85,21 +89,41 @@ namespace GUI
                     if (packagedata.Length < 2) packagedata = package.Split('\n');
                     // This will go through each line and place x of "x: y" in key and y in value
                     foreach (string data in packagedata) {
-                        string[] keyval = data.Split(new String[] { ": " }, StringSplitOptions.None);
-                        if (keyval.Length < 2) break;
-                        packagedatadict.Add(keyval[0], keyval[1]);
+                        if (data != null && data != "") {
+                            string[] keyval = data.Split(new String[] { ": " }, StringSplitOptions.None);
+                            if (keyval.Length < 2) continue;
+                            try {
+                                packagedatadict.Add(keyval[0], keyval[1]);
+                            } catch (System.ArgumentException e) {
+                                packagedatadict.Remove(keyval[0]);
+                                packagedatadict.Add(keyval[0], keyval[1]);
+                            }
+                        }
                     }
-                    string name;
+                    string name = "";
                     if (packagedatadict.TryGetValue("Name", out name)) {
                         try {
                             this.packages.Add(name, new Package(packagedatadict, this.url));
                         } catch (ArgumentException e) {
                             Console.WriteLine("Warning: {0}", e.Message);
+                            string ver = "";
+                            packagedatadict.TryGetValue("Version", out ver);
+                            Package p;
+                            this.packages.TryGetValue(name, out p);
+
+                            bool isnewer = Helper.Versioncheck(ver, p.version);
+                            if (isnewer) {
+                                this.packages.Remove(name);
+                                this.packages.Add(name, new Package(packagedatadict, this.url));
+                            }
                         }
                     } else {
                         // TODO 
                         // Check version and overwrite if newer
-                        Console.WriteLine("Could not grab name from package, skipping...");
+                        string pak = "";
+                        packagedatadict.TryGetValue("Package", out pak);
+                        Console.WriteLine("Could not grab name from {0}, skipping...", pak);
+
                         continue;
                     }
                 }
