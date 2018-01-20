@@ -101,8 +101,8 @@
             // 
             // Packages
             // 
-            this.Packages.CheckOnClick = true;
             this.Packages.FormattingEnabled = true;
+            this.Packages.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.Packages.Location = new System.Drawing.Point(389, 26);
             this.Packages.Name = "Packages";
             this.Packages.Size = new System.Drawing.Size(402, 544);

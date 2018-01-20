@@ -105,7 +105,6 @@ namespace GUI
                         try {
                             this.packages.Add(name, new Package(packagedatadict, this.url));
                         } catch (ArgumentException e) {
-                            Console.WriteLine("Warning: {0}", e.Message);
                             string ver = "";
                             packagedatadict.TryGetValue("Version", out ver);
                             Package p;

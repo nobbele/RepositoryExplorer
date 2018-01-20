@@ -246,7 +246,21 @@ namespace GUI
         }
 
         private void Packages_SelectedIndexChanged(object sender, EventArgs e) {
-            rep.selected.Add(Packages.SelectedItem as Package);
+            //rep.selected.Add(Packages.SelectedItem as Package);
+            int selind = RepoBox.SelectedIndex;
+            if (selind < 0) selind = 0;
+            Repo r = repos[selind];
+            Package pak = r.packages.Values.ToArray<Package>()[Packages.SelectedIndex];
+            name.Text = pak.name;
+            packageid.Text = pak.package;
+            section.Text = pak.section;
+            md5.Text = pak.md5;
+            size.Text = pak.size.ToString();
+            description.Text = pak.description;
+            depends.Text = pak.depends;
+            URL.Text = pak.url;
+            version.Text = pak.version;
+            URL.LinkVisited = false;
         }
     }
 }
