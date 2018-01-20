@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.IO;
 
 namespace GUI
 {
@@ -64,8 +65,14 @@ namespace GUI
             if (p == null) return false;
             return (this.name == p.name);
         }
-        public void download() {
-            Helper.Download(this.url, "debs/" + this.package + ".deb");
+        public void download(string directory) {
+            string file = directory + "/" + (this.package == null ? this.name : this.package) + ".deb";
+
+            if (!Directory.Exists(directory))Directory.CreateDirectory(directory);
+
+            using (var wc = new System.Net.WebClient()) {
+                wc.DownloadFile(this.url, file);
+            }
         }
     }
 }

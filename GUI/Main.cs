@@ -238,12 +238,12 @@ namespace GUI
         private void button2_Click(object sender, EventArgs e) {
             foreach (Repo re in repos) {
                 Downloadprogress.SetProgressNoAnimation(0);
-                if (re.selected.Count > 0) {
+                if (re.sel.Count > 0) {
                     int toadd = 100 / re.sel.Count;
                     foreach (Package p in re.sel) {
                         if (p != null) {
                             Console.WriteLine(p);
-                            p.download();
+                            p.download(direc.Text);
                             int newval = Downloadprogress.Value + toadd;
                             if (newval > 100) newval = 100;
                             Downloadprogress.SetProgressNoAnimation(newval);
@@ -257,14 +257,14 @@ namespace GUI
         private void button3_Click(object sender, EventArgs e) {
             Package p = Packages.SelectedItem as Package;
             if (p != null) {
-                p.download();
+                p.download(direc.Text);
             } else {
                 MessageBox.Show("No package selected (you must double click on a package to select it");
             }
         }
 
         private void Packages_SelectedIndexChanged(object sender, EventArgs e) {
-            rep.selected.Add(Packages.SelectedItem as Package);
+            //rep.selected.Add(Packages.SelectedItem as Package);
             int selind = RepoBox.SelectedIndex;
             if (selind < 0) selind = 0;
             Repo r = repos[selind];

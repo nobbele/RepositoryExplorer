@@ -37,6 +37,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.Info = new System.Windows.Forms.GroupBox();
+            this.version = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
             this.URL = new System.Windows.Forms.LinkLabel();
             this.label10 = new System.Windows.Forms.Label();
             this.description = new System.Windows.Forms.Label();
@@ -59,8 +61,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.Downloadprogress = new System.Windows.Forms.ProgressBar();
             this.label13 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.version = new System.Windows.Forms.Label();
+            this.direc = new System.Windows.Forms.TextBox();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -190,6 +191,24 @@
             this.Info.TabIndex = 11;
             this.Info.TabStop = false;
             this.Info.Text = "Info";
+            // 
+            // version
+            // 
+            this.version.AutoSize = true;
+            this.version.Location = new System.Drawing.Point(58, 107);
+            this.version.Name = "version";
+            this.version.Size = new System.Drawing.Size(42, 13);
+            this.version.TabIndex = 21;
+            this.version.Text = "Version";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(7, 107);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(45, 13);
+            this.label14.TabIndex = 20;
+            this.label14.Text = "Version:";
             // 
             // URL
             // 
@@ -389,23 +408,13 @@
             this.label13.TabIndex = 23;
             this.label13.Text = "Download Progress";
             // 
-            // label14
+            // direc
             // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(7, 107);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(45, 13);
-            this.label14.TabIndex = 20;
-            this.label14.Text = "Version:";
-            // 
-            // version
-            // 
-            this.version.AutoSize = true;
-            this.version.Location = new System.Drawing.Point(58, 107);
-            this.version.Name = "version";
-            this.version.Size = new System.Drawing.Size(42, 13);
-            this.version.TabIndex = 21;
-            this.version.Text = "Version";
+            this.direc.Location = new System.Drawing.Point(797, 475);
+            this.direc.Name = "direc";
+            this.direc.Size = new System.Drawing.Size(100, 20);
+            this.direc.TabIndex = 24;
+            this.direc.Text = "debs";
             // 
             // Main
             // 
@@ -413,6 +422,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.direc);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.Downloadprogress);
             this.Controls.Add(this.button3);
@@ -481,6 +491,7 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label version;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox direc;
     }
 }
 
