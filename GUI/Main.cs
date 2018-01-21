@@ -128,9 +128,9 @@ namespace GUI
                 }
             }
         }
-        private void AddRepo(string url) {
+        private void AddRepo(string url, string srchdir = "") {
             if (!url.EndsWith("/")) url += "/";
-            Repo r = new Repo(url, RefreshProgress);
+            Repo r = new Repo(url, RefreshProgress, srchdir);
             foreach(Repo rep in repos) {
                 if(rep.name == r.name) {
                     return;
@@ -284,6 +284,46 @@ namespace GUI
             URL.Text = pak.url;
             version.Text = pak.version;
             URL.LinkVisited = false;
+        }
+        private void Adddefault(string toadd) {
+            /*string lnk = "";
+            string srchdir = "";
+            //http://apt.thebigboss.org/repofiles/cydia/dists/stable/
+            //main/binary-iphoneos-arm/Packages.bz2
+            switch (toadd) {
+                case "bigboss":
+                    lnk = "http://apt.thebigboss.org/repofiles/cydia";
+                    srchdir = "main/binary-iphoneos-arm/";
+                    break;
+                case "modmyi":
+                    lnk = "http://apt.modmyi.com";
+                    srchdir = "main/binary-iphoneos-arm/";
+                    break;
+            }
+            lnk += "/dists/stable/";*/
+            string lnk = toadd + "/dists/stable/";
+            string srchdir = "main/binary-iphoneos-arm/";
+            AddRepo(lnk, srchdir);
+        }
+
+        private void Defrep_Click(object sender, EventArgs e) {
+            DefaultRepos popup = new DefaultRepos();
+            popup.ShowDialog();
+            string url = "";
+            switch(popup.chosen) {
+                case "bigboss":
+                    url = "http://apt.thebigboss.org/repofiles/cydia";
+                    break;
+                case "modmyi":
+                    url = "http://apt.modmyi.com";
+                    break;
+                default:
+                    url = "";
+                    break;
+            }
+            if (url != "") {
+                Adddefault(url);
+            }
         }
     }
 }

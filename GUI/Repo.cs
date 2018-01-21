@@ -22,7 +22,7 @@ namespace GUI
         public Repo() {
             
         }
-        public Repo(string url, ProgressBar RefreshProgress) {
+        public Repo(string url, ProgressBar RefreshProgress, string srchdir = "") {
             selected = new List<Package>();
             sel = new List<Package>();
             RefreshProgress.SetProgressNoAnimation(0);
@@ -67,7 +67,7 @@ namespace GUI
             }
             if (!(dir == null)) {
 
-                DownloadPackages(dir); //Puts packages file in *dir*/Packages
+                DownloadPackages(dir, srchdir); //Puts packages file in *dir*/Packages
 
                 RefreshProgress.SetProgressNoAnimation(20); // 35
 
@@ -136,12 +136,12 @@ namespace GUI
                 MessageBox.Show("Error, repo not found, make sure it's entered correctly");
             }
         }
-        private void DownloadPackages(string dir) {
+        private void DownloadPackages(string dir, string srchdir = "") {
             try {
                 
                 string dire = dir + (dir.EndsWith("/") ? "Packages" : "/Packages");
                 if (!File.Exists(dire)) {
-                    string urle = this.url + (this.url.EndsWith("/") ? "Packages.bz2" : "/Packages.bz2");
+                    string urle = this.url + (this.url.EndsWith("/") ? srchdir : "/" + srchdir) + (srchdir.EndsWith("/") ? "Packages.bz2" : "/Packages.bz2");
                     Helper.DecompressUrl(urle, dire);
                     File.Delete(dir + (dir.EndsWith("/") ? "Packages.bz2" : "/Packages.bz2"));
                 }

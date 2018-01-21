@@ -62,6 +62,7 @@
             this.Downloadprogress = new System.Windows.Forms.ProgressBar();
             this.label13 = new System.Windows.Forms.Label();
             this.direc = new System.Windows.Forms.TextBox();
+            this.defrep = new System.Windows.Forms.Button();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -416,12 +417,23 @@
             this.direc.TabIndex = 24;
             this.direc.Text = "debs";
             // 
+            // defrep
+            // 
+            this.defrep.Location = new System.Drawing.Point(875, 600);
+            this.defrep.Name = "defrep";
+            this.defrep.Size = new System.Drawing.Size(125, 23);
+            this.defrep.TabIndex = 25;
+            this.defrep.Text = "DO NOT USE";
+            this.defrep.UseVisualStyleBackColor = true;
+            this.defrep.Click += new System.EventHandler(this.Defrep_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.defrep);
             this.Controls.Add(this.direc);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.Downloadprogress);
@@ -492,6 +504,7 @@
         private System.Windows.Forms.Label version;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox direc;
+        private System.Windows.Forms.Button defrep;
     }
 }
 
