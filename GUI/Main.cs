@@ -57,6 +57,33 @@ namespace GUI
                 RepoBox.Items.Add(r);
             }
         }
+        private void copyitems() {
+            if (rep.packages != null) {
+                CheckedListBox temp;
+                boxes.TryGetValue(rep.name, out temp);
+
+                if (!(temp == null)) Packages.Items.AddRange(temp.Items);
+                else {
+                    MessageBox.Show("Could not get value rep.name from boxes");
+                    foreach (CheckedListBox t in boxes.Values) {
+                        MessageBox.Show(t.ToString());
+                    }
+                }
+         
+                copyitemspart2();
+            }
+        }
+        private void copyitemspart2() {
+            for (int i = 0; i < Packages.Items.Count; i++) {
+                Package pak = (Package)Packages.Items[i];
+                if (pak.selected) {
+                    Console.WriteLine("selected!");
+                    int ind = Packages.Items.IndexOf(pak);
+                    Packages.SetItemChecked(ind, true);
+                }
+                Console.WriteLine("check");
+            }
+        }
         private void ViewRepo(int ik) {
             int index = ik;
             if (index < 0) index = 0;
@@ -65,22 +92,7 @@ namespace GUI
 
             Reponame.Text = rep.name;
             Packages.Items.Clear();
-            if (rep.packages != null) {
-                CheckedListBox temp;
-                boxes.TryGetValue(rep.name, out temp);
-
-                Packages.Items.AddRange(temp.Items);
-
-                for (int i = 0; i < Packages.Items.Count; i++) {
-                    Package pak = (Package)Packages.Items[i];
-                    if (pak.selected) {
-                        Console.WriteLine("selected!");
-                        int ind = Packages.Items.IndexOf(pak);
-                        Packages.SetItemChecked(ind, true);
-                    }
-                    Console.WriteLine("check");
-                }
-            }
+            copyitems();
         }
         private void AddRepo(string url, string srchdir = "") {
             if (!url.EndsWith("/")) url += "/";
