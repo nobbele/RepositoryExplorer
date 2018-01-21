@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace GUI
 {
@@ -52,14 +53,21 @@ namespace GUI
         public static String ReadFileInfo(FileInfo file) {
             string str = "";
             if (file.Exists) {
-                using (FileStream fs = file.OpenRead()) {
+                /*using (FileStream fs = file.OpenRead()) {
                     byte[] b = new byte[1024];
                     UTF8Encoding temp = new UTF8Encoding(true);
-
+                    Console.WriteLine("reading..");
+                    long toadd = 0;
                     while (fs.Read(b, 0, b.Length) > 0) {
+                        Console.WriteLine("read {0} at date {1}", temp.GetString(b), DateTime.Now.ToLocalTime());
                         str += temp.GetString(b);
                     }
-                }
+                    Console.WriteLine("done!");
+                }*/
+                Console.WriteLine(file.FullName);
+                byte[] b = File.ReadAllBytes(file.FullName);
+                UTF8Encoding temp = new UTF8Encoding(true);
+                str = temp.GetString(b);
             }
             return str;
         }
@@ -85,9 +93,12 @@ namespace GUI
         }
         public static string ReadFromPath(string url) {
             FileInfo file = new FileInfo(url);
+            Console.WriteLine("Done with file info!");
             string content = "";
             if (file.Exists)
+                Console.WriteLine("Reading...");
                 content = ReadFileInfo(file);
+            Console.WriteLine("Done reading!");
             return content;
         }
         public static Dictionary<string, string> ParseFiles(string[] file) {

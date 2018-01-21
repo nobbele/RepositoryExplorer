@@ -83,6 +83,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repo.cs" />
     <Compile Include="SerializableDictionary.cs" />
+    <Compile Include="SplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SplashScreen.Designer.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="DefaultRepos.resx">
       <DependentUpon>DefaultRepos.cs</DependentUpon>
     </EmbeddedResource>
@@ -98,6 +104,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SplashScreen.resx">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

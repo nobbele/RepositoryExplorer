@@ -5,74 +5,21 @@ using System.Linq;
 using System.Windows.Forms;
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Core;
+using System.Threading.Tasks;
 
 namespace GUI
 {
     public partial class Main : Form
     {
         Dictionary<string, Package> selected;
+        List<Package> toinstall;
         List<Repo> repos;
         Repo rep;
+        Dictionary<string, CheckedListBox> boxes;
         public Main() {
             InitializeComponent();
-            repos = new List<Repo>();
-            selected = new Dictionary<string, Package>();
-            string[] repofiles = Directory.GetFiles(Environment.CurrentDirectory, "*.repo");
-
-            foreach (string r in repofiles) {
-                bool cont = false;
-                FileStream fs = File.OpenRead(r);
-                ZipFile zf = new ZipFile(fs);
-
-                string path = zf.Name.Replace(".repo", "");
-
-                foreach (ZipEntry zipEntry in zf) {
-                    try {
-                        string name = zipEntry.Name;
-
-                        byte[] buffer = new byte[4096];
-                        Stream zipStream = zf.GetInputStream(zipEntry);
-
-                        String fullZipToPath = Path.Combine(path, name);
-                        Console.WriteLine(fullZipToPath);
-
-                        string directoryName = Path.GetDirectoryName(fullZipToPath);
-                        if (directoryName.Length > 0)
-                            Directory.CreateDirectory(directoryName);
-
-                        using (FileStream streamWriter = File.Create(fullZipToPath)) {
-                            StreamUtils.Copy(zipStream, streamWriter, buffer);
-                        }
-                    } catch ( DirectoryNotFoundException ex ) {
-                        Console.WriteLine(ex.Message);
-                        cont = true;
-                        break;
-                    } catch (FileNotFoundException ex) {
-                        Console.WriteLine(ex.Message);
-                        cont = true;
-                        break;
-                    }
-                }
-                if (cont) {
-                    continue;
-                }
-                string n = zf.Name;
-                zf.IsStreamOwner = true;
-                zf.Close();
-
-                try {
-                    string data = path + "/data.repodata";
-                    Repo toadd = ObjectSaver.ReadFromXmlFile<Repo>(data);
-                    toadd.selected = new List<Package>();
-                    toadd.sel = new List<Package>();
-                    repos.Add(toadd);
-                } catch (FileNotFoundException ex) {
-                    File.Delete(n);
-                    Console.WriteLine(ex.Message);
-                    continue;
-                }
-            }
-            ReloadRepoBox();
+            boxes = new Dictionary<string, CheckedListBox>();
+            toinstall = new List<Package>();
         }
 
         private void Refresh_Click(object sender, EventArgs e) {
@@ -110,8 +57,8 @@ namespace GUI
                 RepoBox.Items.Add(r);
             }
         }
-        private void ViewRepo() {
-            int index = RepoBox.SelectedIndex;
+        private void ViewRepo(int ik) {
+            int index = ik;
             if (index < 0) index = 0;
             if (index >= repos.Count) index = repos.Count;
             rep = repos[index];
@@ -119,12 +66,19 @@ namespace GUI
             Reponame.Text = rep.name;
             Packages.Items.Clear();
             if (rep.packages != null) {
-                foreach (Package pak in rep.packages.Values) {
-                    int i = Packages.Items.Add(pak);
-                    List<Package> sel = rep.selected;
-                    if (sel.Contains(pak)) {
-                        Packages.SetItemChecked(i, true);
+                CheckedListBox temp;
+                boxes.TryGetValue(rep.name, out temp);
+
+                Packages.Items.AddRange(temp.Items);
+
+                for (int i = 0; i < Packages.Items.Count; i++) {
+                    Package pak = (Package)Packages.Items[i];
+                    if (pak.selected) {
+                        Console.WriteLine("selected!");
+                        int ind = Packages.Items.IndexOf(pak);
+                        Packages.SetItemChecked(ind, true);
                     }
+                    Console.WriteLine("check");
                 }
             }
         }
@@ -139,6 +93,29 @@ namespace GUI
             if (r.packages != null && r.name != null) {
                 repos.Add(r);
             }
+            if (r != null && r.name != null) {
+                string path = Environment.CurrentDirectory + "/" + r.name + "/";
+                string dataname = path + "data.repodata";
+                ObjectSaver.WriteToXmlFile(dataname, r);
+
+                //Fix for coolstar's weird description
+                string orig = File.ReadAllText(dataname);
+                File.Delete(dataname);
+                File.WriteAllText(dataname, orig);
+
+
+                string zipname = r.name + ".repo";
+                ZipOutputStream zip = new ZipOutputStream(File.Create(zipname));
+
+                string folderName = r.name;
+
+                int folderOffset = folderName.Length + (folderName.EndsWith("\\") ? 0 : 1);
+
+                Helper.CompressFolder(folderName, zip, folderOffset);
+
+                zip.IsStreamOwner = true;
+                zip.Close();
+            }
         }
 
         private void Packages_ItemCheck_1(object sender, ItemCheckEventArgs e) {
@@ -147,15 +124,23 @@ namespace GUI
             if (e.CurrentValue == CheckState.Unchecked) {
                 if (selected.ContainsKey(packtochange.name))
                     selected.Remove(packtochange.name);
+                packtochange.selected = true;
                 selected.Add(packtochange.name, packtochange);
-            } else selected.Remove(packtochange.name);
+            } else {
+                selected.Remove(packtochange.name);
+                packtochange.selected = true;
+            }
             if (!rep.sel.Contains(packtochange)) {
                 rep.sel.Add(packtochange);
+                packtochange.selected = true;
             } else {
                 if (e.CurrentValue == CheckState.Checked) {
+                    packtochange.selected = false;
                     rep.sel.Remove(packtochange);
                 }
             }
+            if (packtochange.selected) toinstall.Add(packtochange);
+            else toinstall.Remove(packtochange);
 
             int selind = RepoBox.SelectedIndex;
             if (selind < 0) selind = 0;
@@ -172,36 +157,6 @@ namespace GUI
             version.Text = pak.version;
             URL.LinkVisited = false;
         }
-        protected override void OnClosed(EventArgs e) {
-            foreach(Repo r in repos) {
-                if (r != null && r.name != null) {
-                    string path = Environment.CurrentDirectory + "/" + r.name + "/";
-                    string dataname = path + "data.repodata";
-                    ObjectSaver.WriteToXmlFile(dataname, r);
-
-                    //Fix for coolstar's weird description
-                    string orig = File.ReadAllText(dataname);
-                    File.Delete(dataname);
-                    File.WriteAllText(dataname, orig);
-                    
-
-                    string zipname = r.name + ".repo";
-                    ZipOutputStream zip = new ZipOutputStream(File.Create(zipname));
-
-                    string folderName = r.name;
-
-                    int folderOffset = folderName.Length + (folderName.EndsWith("\\") ? 0 : 1);
-
-                    Helper.CompressFolder(folderName, zip, folderOffset);
-
-                    zip.IsStreamOwner = true;
-                    zip.Close();
-
-                    Directory.Delete(r.name, true);
-                }
-            }
-        }
-
 
         private void URL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
             LinkLabel l = sender as LinkLabel;
@@ -217,13 +172,17 @@ namespace GUI
         }
 
         private void RepoBox_SelectedValueChanged(object sender, EventArgs e) {
-            ViewRepo();
+            ViewRepo(RepoBox.SelectedIndex);
         }
 
         private void button1_Click(object sender, EventArgs e) {
             RefreshAll();
         }
+        public delegate void AddPackage();
+        public AddPackage addpackage;
+        public void AddPackageMethod(Package pak) {
 
+        }
         private void search_TextChanged(object sender, EventArgs e) {
             if (rep != null) {
                 Packages.Items.Clear();
@@ -286,29 +245,19 @@ namespace GUI
             URL.LinkVisited = false;
         }
         private void Adddefault(string toadd) {
-            /*string lnk = "";
-            string srchdir = "";
-            //http://apt.thebigboss.org/repofiles/cydia/dists/stable/
-            //main/binary-iphoneos-arm/Packages.bz2
-            switch (toadd) {
-                case "bigboss":
-                    lnk = "http://apt.thebigboss.org/repofiles/cydia";
-                    srchdir = "main/binary-iphoneos-arm/";
-                    break;
-                case "modmyi":
-                    lnk = "http://apt.modmyi.com";
-                    srchdir = "main/binary-iphoneos-arm/";
-                    break;
-            }
-            lnk += "/dists/stable/";*/
             string lnk = toadd + "/dists/stable/";
             string srchdir = "main/binary-iphoneos-arm/";
-            AddRepo(lnk, srchdir);
+            try {
+                AddRepo(lnk, srchdir);
+            } catch (Exception e) {
+                MessageBox.Show(e.Message);
+            }
         }
 
         private void Defrep_Click(object sender, EventArgs e) {
             DefaultRepos popup = new DefaultRepos();
             popup.ShowDialog();
+            MessageBox.Show("This will take a very very long time");
             string url = "";
             switch(popup.chosen) {
                 case "bigboss":
@@ -317,6 +266,12 @@ namespace GUI
                 case "modmyi":
                     url = "http://apt.modmyi.com";
                     break;
+                case "saurik":
+                    string lnk = "http://apt.saurik.com/dists/ios/";
+                    string srchdir = "main/binary-iphoneos-arm/";
+                    AddRepo(lnk, srchdir);
+                    url = "";
+                    break;
                 default:
                     url = "";
                     break;
@@ -324,6 +279,93 @@ namespace GUI
             if (url != "") {
                 Adddefault(url);
             }
+            ReloadRepoBox();
+        }
+        private void Main_Load(object sender, EventArgs e) {
+            /*this.Show();
+            this.Select();*/
+            SplashScreen splash = new SplashScreen();
+            splash.Show();
+            splash.Select();
+            
+
+            repos = new List<Repo>();
+            selected = new Dictionary<string, Package>();
+            string[] repofiles = Directory.GetFiles(Environment.CurrentDirectory, "*.repo");
+            Parallel.ForEach(repofiles, (r) => {
+                bool cont = false;
+                FileStream fs = File.OpenRead(r);
+                ZipFile zf = new ZipFile(fs);
+
+                string path = zf.Name.Replace(".repo", "");
+
+                foreach (ZipEntry zipEntry in zf) {
+                    try {
+                        string name = zipEntry.Name;
+
+                        byte[] buffer = new byte[4096];
+                        Stream zipStream = zf.GetInputStream(zipEntry);
+
+                        String fullZipToPath = Path.Combine(path, name);
+                        Console.WriteLine(fullZipToPath);
+
+                        string directoryName = Path.GetDirectoryName(fullZipToPath);
+                        if (directoryName.Length > 0)
+                            Directory.CreateDirectory(directoryName);
+
+                        using (FileStream streamWriter = File.Create(fullZipToPath)) {
+                            StreamUtils.Copy(zipStream, streamWriter, buffer);
+                        }
+                    } catch (DirectoryNotFoundException ex) {
+                        Console.WriteLine(ex.Message);
+                        cont = true;
+                        break;
+                    } catch (FileNotFoundException ex) {
+                        Console.WriteLine(ex.Message);
+                        cont = true;
+                        break;
+                    }
+                }
+                if (cont) {
+                    return;
+                }
+                string n = zf.Name;
+                zf.IsStreamOwner = true;
+                zf.Close();
+
+                try {
+                    string data = path + "/data.repodata";
+                    Repo toadd = ObjectSaver.ReadFromXmlFile<Repo>(data);
+                    toadd.selected = new List<Package>();
+                    toadd.sel = new List<Package>();
+                    repos.Add(toadd);
+
+                    CheckedListBox b = new CheckedListBox();
+                    foreach (Package pak in toadd.packages.Values) {
+                        b.Items.Add(pak);
+                    }
+                    boxes.Add(toadd.name, b);
+                } catch (FileNotFoundException ex) {
+                    File.Delete(n);
+                    Console.WriteLine(ex.Message);
+                    return;
+                }
+            });
+            foreach (Repo rep in repos) {
+                
+            }
+            ReloadRepoBox();
+
+            splash.Hide();
+            splash.Close();
+            this.Show();
+            this.Select();
+        }
+
+        private void button4_Click(object sender, EventArgs e) {
+            FolderBrowserDialog f = new FolderBrowserDialog();
+            f.ShowDialog();
+            direc.Text = f.SelectedPath;
         }
     }
 }

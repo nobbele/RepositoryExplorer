@@ -17,6 +17,8 @@ namespace GUI
         public string md5;
         public string version;
         public string description;
+
+        public bool selected;
         public Package() {
 
         }
@@ -64,6 +66,9 @@ namespace GUI
             Package p = obj as Package;
             if (p == null) return false;
             return (this.name == p.name);
+        }
+        public override int GetHashCode() {
+            return size * (selected ? 1 : 0) / this.name.GetHashCode() * 17;
         }
         public void download(string directory) {
             string file = directory + "/" + (this.package == null ? this.name : this.package) + ".deb";

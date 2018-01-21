@@ -63,6 +63,7 @@
             this.label13 = new System.Windows.Forms.Label();
             this.direc = new System.Windows.Forms.TextBox();
             this.defrep = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -413,7 +414,7 @@
             // 
             this.direc.Location = new System.Drawing.Point(797, 475);
             this.direc.Name = "direc";
-            this.direc.Size = new System.Drawing.Size(100, 20);
+            this.direc.Size = new System.Drawing.Size(178, 20);
             this.direc.TabIndex = 24;
             this.direc.Text = "debs";
             // 
@@ -423,9 +424,19 @@
             this.defrep.Name = "defrep";
             this.defrep.Size = new System.Drawing.Size(125, 23);
             this.defrep.TabIndex = 25;
-            this.defrep.Text = "DO NOT USE";
+            this.defrep.Text = "Add Default Repo";
             this.defrep.UseVisualStyleBackColor = true;
             this.defrep.Click += new System.EventHandler(this.Defrep_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(981, 475);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 26;
+            this.button4.Text = "Select folder";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // Main
             // 
@@ -433,6 +444,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.defrep);
             this.Controls.Add(this.direc);
             this.Controls.Add(this.label13);
@@ -458,6 +470,7 @@
             this.HelpButton = true;
             this.Name = "Main";
             this.Text = "RepositoryExplorer";
+            this.Load += new System.EventHandler(this.Main_Load);
             this.Info.ResumeLayout(false);
             this.Info.PerformLayout();
             this.ResumeLayout(false);
@@ -505,6 +518,7 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox direc;
         private System.Windows.Forms.Button defrep;
+        private System.Windows.Forms.Button button4;
     }
 }
 

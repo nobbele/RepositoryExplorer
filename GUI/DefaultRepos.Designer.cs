@@ -25,8 +25,11 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             this.view = new System.Windows.Forms.ListView();
             this.add = new System.Windows.Forms.Button();
+            this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).BeginInit();
             this.SuspendLayout();
             // 
             // view
@@ -58,6 +61,7 @@
             this.Controls.Add(this.view);
             this.Name = "DefaultRepos";
             this.Text = "DefaultRepos";
+            ((System.ComponentModel.ISupportInitialize)(this.bindingSource1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -65,5 +69,6 @@
         #endregion
         private System.Windows.Forms.ListView view;
         private System.Windows.Forms.Button add;
+        private System.Windows.Forms.BindingSource bindingSource1;
     }
 }

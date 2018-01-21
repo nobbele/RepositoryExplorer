@@ -66,14 +66,14 @@ namespace GUI
                 File.Move("Release", to);
             }
             if (!(dir == null)) {
-
+                Console.WriteLine("Downloading packages...");
                 DownloadPackages(dir, srchdir); //Puts packages file in *dir*/Packages
-
+                Console.WriteLine("Downloaded!");
                 RefreshProgress.SetProgressNoAnimation(20); // 35
-
+                Console.WriteLine("Reading packages...");
                 // Reads the Packages file stored in repo directory
                 string content = Helper.ReadFromPath(dir + (dir.EndsWith("/") ? "Packages" : "/Packages"));
-
+                Console.WriteLine("Done!");
                 RefreshProgress.SetProgressNoAnimation(5); // 40
 
                 // different OSes uses different endings so this splits each line into a element of an array
@@ -84,6 +84,7 @@ namespace GUI
                                             // Initilize a dictionary with format name: packagedata
                 this.packages = new SerializableDictionary<string, Package>();
                 foreach (string package in contentarr) {
+                    Console.WriteLine("adding {0}", package);
                     if ((RefreshProgress.Value + (60 / contentarr.Length)) > 100) RefreshProgress.SetProgressNoAnimation(100);
                     else RefreshProgress.SetProgressNoAnimation((60 / contentarr.Length)); // 100
                                                                             // Initilize a Dictionary dataname: data
