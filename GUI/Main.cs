@@ -121,7 +121,7 @@ namespace GUI
         private void Packages_ItemCheck_1(object sender, ItemCheckEventArgs e) {
 
             Package packtochange = (Package)Packages.Items[e.Index];
-            if (e.CurrentValue == CheckState.Unchecked) {
+            /*if (e.CurrentValue == CheckState.Unchecked) {
                 if (selected.ContainsKey(packtochange.name))
                     selected.Remove(packtochange.name);
                 packtochange.selected = true;
@@ -129,7 +129,7 @@ namespace GUI
             } else {
                 selected.Remove(packtochange.name);
                 packtochange.selected = true;
-            }
+            }*/
             if (!rep.sel.Contains(packtochange)) {
                 rep.sel.Add(packtochange);
                 packtochange.selected = true;

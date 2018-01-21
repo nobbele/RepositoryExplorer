@@ -28,9 +28,14 @@ namespace GUI
             
 
             bool success = this.data.TryGetValue("Filename", out this.url);
-            if (success)
+            if (success) {
                 this.url = (url.EndsWith("/") ? url : url + "/") + this.url;
-            else {
+                if (url.EndsWith("php") || url.EndsWith("/")) {
+                    this.url = url + this.url;
+                } else {
+                    this.url = url + "/" + this.url;
+                }
+            } else {
                 this.url = "Invalid";
             }
             if (!this.data.TryGetValue("Name", out this.name)) {

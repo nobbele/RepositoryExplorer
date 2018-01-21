@@ -151,7 +151,7 @@ namespace GUI
             }
         }
         public override string ToString() {
-            return this.name;
+            return this.name + "   " + this.packages.Count + " packages";
         }
     }
     public static class ExtensionMethods

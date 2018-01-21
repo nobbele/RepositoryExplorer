@@ -15,7 +15,7 @@ namespace GUI
         public SplashScreen() {
             InitializeComponent();
         }
-        public string[] tips = { "The more repos you have installed\nThe longer the load will take!" };
+        public string[] tips = { "The more repos you have installed\nThe longer the load will take!", "Fuck Microsoft", "Default repos are incredibly slow" };
         private void SplashScreen_Load(object sender, EventArgs e) {
             int max = tips.Length;
             Tip.Text = tips[(new Random().Next(max))];
