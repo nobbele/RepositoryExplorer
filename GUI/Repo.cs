@@ -138,16 +138,20 @@ namespace GUI
             }
         }
         private void DownloadPackages(string dir, string srchdir = "") {
-            try {
-                
                 string dire = dir + (dir.EndsWith("/") ? "Packages" : "/Packages");
-                if (!File.Exists(dire)) {
-                    string urle = this.url + (this.url.EndsWith("/") ? srchdir : "/" + srchdir) + (srchdir.EndsWith("/") ? "Packages.bz2" : "/Packages.bz2");
+            if (!File.Exists(dire)) {
+                // Add fall back to Packages.gz if bz2 doesn't work
+                // Makes repo like beta.unlimapps.com and repo.lockhtml.com work
+                string urlto = this.url + (this.url.EndsWith("/") ? srchdir : "/" + srchdir + (srchdir.EndsWith("/") ? "" : "/"));
+                string urle = urlto + "Packages.bz2";
+                try {
                     Helper.DecompressUrl(urle, dire);
                     File.Delete(dir + (dir.EndsWith("/") ? "Packages.bz2" : "/Packages.bz2"));
-                }
-            } catch (Exception ex) {
-                Console.WriteLine("Failed to download. Error " + ex.ToString());
+                } catch (FileNotFoundException ex) {
+                    urle = urlto + "Packages.gz";
+                    Helper.DecompressUrl(urle, dire, "gz");
+                    File.Delete(dir + (dir.EndsWith("/") ? "Packages.gz" : "/Packages.gz"));
+                }   
             }
         }
         public override string ToString() {

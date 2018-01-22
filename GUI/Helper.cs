@@ -1,4 +1,5 @@
 ﻿using ICSharpCode.SharpZipLib.Core;
+using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Zip;
 using System;
 using System.Collections.Generic;
@@ -64,7 +65,6 @@ namespace GUI
                     }
                     Console.WriteLine("done!");
                 }*/
-                Console.WriteLine(file.FullName);
                 byte[] b = File.ReadAllBytes(file.FullName);
                 UTF8Encoding temp = new UTF8Encoding(true);
                 str = temp.GetString(b);
@@ -74,31 +74,62 @@ namespace GUI
         public static String ReadUrl(string url, string name) {
             return ReadFileInfo(Download(url + (url.EndsWith("/") ? name : "/" + name), name));
         }
-        public static void DecompressUrl(string url, string localfile) {
+        // Extracts the file contained within a GZip to the target dir.
+        // A GZip can contain only one file, which by default is named the same as the GZip except
+        // without the extension.
+        //
+        public static void ExtractGZipSample(string gzipFileName, string targetDir) {
+
+            // Use a 4K buffer. Any larger is a waste.    
+            byte[] dataBuffer = new byte[4096];
+
+            using (System.IO.Stream fs = new FileStream(gzipFileName, FileMode.Open, FileAccess.Read)) {
+                using (GZipInputStream gzipStream = new GZipInputStream(fs)) {
+
+                    // Change this to your needs
+                    string fnOut = Path.Combine(targetDir, Path.GetFileNameWithoutExtension(gzipFileName));
+
+                    using (FileStream fsOut = File.Create(fnOut)) {
+                        StreamUtils.Copy(gzipStream, fsOut, dataBuffer);
+                    }
+                }
+            }
+        }
+        public static void DecompressUrl(string url, string localfile, string type="bz2") {
             /*
              * God dammit coolstar, you wasted like 5 hours from me cuz of the stupid non-compressed Packages file in your repo
              */
-            string dir = localfile.Split('/')[0];
+            string[] splt = localfile.Split('/');
+            string dir = splt[0];
             Directory.CreateDirectory(dir);
-            string bz2file = localfile + ".bz2";
             
-            FileInfo packagesfile = Helper.Download(url, bz2file);
-            FileStream packagesbz2 = (FileStream)Helper.InfoToStream(packagesfile);
+            if (!url.StartsWith("http")) {
+                url = "http://" + url;
+                MessageBox.Show("Please include http:// or https:// in the beginning next time");
+            }
 
-            FileStream packages = File.Create(localfile);
-            ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(packagesbz2, packages, true);
+            if (type == "bz2") {
+                string bz2file = localfile + ".bz2";
+                FileInfo packagesfile = Helper.Download(url, bz2file);
+                FileStream packagesbz2 = (FileStream)Helper.InfoToStream(packagesfile);
+
+                FileStream packages = File.Create(localfile);
+                ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(packagesbz2, packages, true);
+            }
+            if (type == "gz") {
+                string gzfile = localfile + ".gz";
+                Helper.Download(url, gzfile);
+                ExtractGZipSample(gzfile, dir);
+            }
         }
         public static string RemoveSpecialCharacters(string str) {
             return Regex.Replace(str, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
         }
         public static string ReadFromPath(string url) {
             FileInfo file = new FileInfo(url);
-            Console.WriteLine("Done with file info!");
             string content = "";
             if (file.Exists)
-                Console.WriteLine("Reading...");
                 content = ReadFileInfo(file);
-            Console.WriteLine("Done reading!");
             return content;
         }
         public static Dictionary<string, string> ParseFiles(string[] file) {

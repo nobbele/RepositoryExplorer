@@ -18,19 +18,20 @@ namespace GUI
         Dictionary<string, CheckedListBox> boxes;
         public Main() {
             InitializeComponent();
-            boxes = new Dictionary<string, CheckedListBox>();
             toinstall = new List<Package>();
         }
 
         private void Refresh_Click(object sender, EventArgs e) {
             RefreshProgress.SetProgressNoAnimation(0);
             AddRepo(EnterRepo.Text);
+            RefreshProgress.SetProgressNoAnimation(50);
+            ReloadRepos();
             RefreshProgress.SetProgressNoAnimation(100);
-            RepoBox.Items.Clear();
+            /*RepoBox.Items.Clear();
             foreach (Repo r in repos) {
                 Console.WriteLine(r.ToString());
                 RepoBox.Items.Add(r);
-            }
+            }*/
         }
         private void RefreshAll() {
             List<string> reponames = new List<string>();
@@ -77,11 +78,9 @@ namespace GUI
             for (int i = 0; i < Packages.Items.Count; i++) {
                 Package pak = (Package)Packages.Items[i];
                 if (pak.selected) {
-                    Console.WriteLine("selected!");
                     int ind = Packages.Items.IndexOf(pak);
                     Packages.SetItemChecked(ind, true);
                 }
-                Console.WriteLine("check");
             }
         }
         private void ViewRepo(int ik) {
@@ -293,14 +292,12 @@ namespace GUI
             }
             ReloadRepoBox();
         }
-        private void Main_Load(object sender, EventArgs e) {
-            /*this.Show();
-            this.Select();*/
-            SplashScreen splash = new SplashScreen();
-            splash.Show();
-            splash.Select();
-            
+        private void ReloadRepos() {
+            RepoBox.ClearSelected();
+            Packages.ClearSelected();
 
+            rep = new Repo();
+            boxes = new Dictionary<string, CheckedListBox>();
             repos = new List<Repo>();
             selected = new Dictionary<string, Package>();
             string[] repofiles = Directory.GetFiles(Environment.CurrentDirectory, "*.repo");
@@ -362,11 +359,18 @@ namespace GUI
                     Console.WriteLine(ex.Message);
                     return;
                 }
+                Directory.Delete(path, true);
             });
-            foreach (Repo rep in repos) {
-                
-            }
             ReloadRepoBox();
+        }
+        private void Main_Load(object sender, EventArgs e) {
+            /*this.Show();
+            this.Select();*/
+            SplashScreen splash = new SplashScreen();
+            splash.Show();
+            splash.Select();
+
+            ReloadRepos();
 
             splash.Hide();
             splash.Close();
@@ -378,6 +382,13 @@ namespace GUI
             FolderBrowserDialog f = new FolderBrowserDialog();
             f.ShowDialog();
             direc.Text = f.SelectedPath;
+        }
+
+        private void button5_Click(object sender, EventArgs e) {
+            if (rep != null) {
+                File.Delete(rep.name + ".repo");
+                ReloadRepos();
+            }
         }
     }
 }

@@ -64,6 +64,7 @@
             this.direc = new System.Windows.Forms.TextBox();
             this.defrep = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -189,7 +190,7 @@
             this.Info.Controls.Add(this.name);
             this.Info.Location = new System.Drawing.Point(797, 26);
             this.Info.Name = "Info";
-            this.Info.Size = new System.Drawing.Size(340, 353);
+            this.Info.Size = new System.Drawing.Size(340, 268);
             this.Info.TabIndex = 11;
             this.Info.TabStop = false;
             this.Info.Text = "Info";
@@ -236,7 +237,7 @@
             // 
             this.description.Location = new System.Drawing.Point(75, 120);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(259, 246);
+            this.description.Size = new System.Drawing.Size(259, 102);
             this.description.TabIndex = 17;
             this.description.Text = "Description";
             // 
@@ -438,12 +439,23 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(791, 300);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 27;
+            this.button5.Text = "Delete Repo";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.defrep);
             this.Controls.Add(this.direc);
@@ -519,6 +531,7 @@
         private System.Windows.Forms.TextBox direc;
         private System.Windows.Forms.Button defrep;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
     }
 }
 
