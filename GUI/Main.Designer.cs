@@ -51,7 +51,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.RepoBox = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.RefreshBar = new System.Windows.Forms.ProgressBar();
             this.label11 = new System.Windows.Forms.Label();
@@ -65,6 +64,7 @@
             this.defrep = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.RepoBox = new System.Windows.Forms.ListBox();
             this.Info.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -322,15 +322,6 @@
             this.label9.TabIndex = 13;
             this.label9.Text = "Repo load";
             // 
-            // RepoBox
-            // 
-            this.RepoBox.FormattingEnabled = true;
-            this.RepoBox.Location = new System.Drawing.Point(12, 26);
-            this.RepoBox.Name = "RepoBox";
-            this.RepoBox.Size = new System.Drawing.Size(371, 576);
-            this.RepoBox.TabIndex = 14;
-            this.RepoBox.SelectedValueChanged += new System.EventHandler(this.RepoBox_SelectedValueChanged);
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(12, 629);
@@ -449,12 +440,22 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
+            // RepoBox
+            // 
+            this.RepoBox.FormattingEnabled = true;
+            this.RepoBox.Location = new System.Drawing.Point(12, 26);
+            this.RepoBox.Name = "RepoBox";
+            this.RepoBox.Size = new System.Drawing.Size(371, 576);
+            this.RepoBox.TabIndex = 28;
+            this.RepoBox.SelectedIndexChanged += new System.EventHandler(this.RepoBox_SelectedIndexChanged);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.RepoBox);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.defrep);
@@ -468,7 +469,6 @@
             this.Controls.Add(this.label11);
             this.Controls.Add(this.RefreshBar);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.RepoBox);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.Info);
@@ -516,7 +516,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.LinkLabel URL;
         private System.Windows.Forms.Label label10;
-        public System.Windows.Forms.ListBox RepoBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ProgressBar RefreshBar;
         private System.Windows.Forms.Label label11;
@@ -532,6 +531,7 @@
         private System.Windows.Forms.Button defrep;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.ListBox RepoBox;
     }
 }
 

@@ -17,20 +17,7 @@ namespace GUI
             string[] dir = name.Split('/');
             if(dir.Length > 1) Directory.CreateDirectory(dir[0]);
             using (var wc = new System.Net.WebClient()) {
-                //try {
-                try {
-                    wc.DownloadFile(file, name);
-                } catch (System.Net.WebException ex) {
-                    
-                } catch (System.ArgumentException ex) {
-                    
-                }
-                /*} catch (System.Net.WebException e) {
-                    Console.WriteLine("Error occured: " + e.Message);
-                    Console.WriteLine("Can't continue, exiting in 3 seconds");
-                    System.Threading.Thread.Sleep(3000);
-                    Environment.Exit(-1);
-                }*/
+                wc.DownloadFile(file, name);
             }
             string localpath = Directory.GetCurrentDirectory() + "/" + name;
             return (new FileInfo(localpath));
@@ -54,17 +41,6 @@ namespace GUI
         public static String ReadFileInfo(FileInfo file) {
             string str = "";
             if (file.Exists) {
-                /*using (FileStream fs = file.OpenRead()) {
-                    byte[] b = new byte[1024];
-                    UTF8Encoding temp = new UTF8Encoding(true);
-                    Console.WriteLine("reading..");
-                    long toadd = 0;
-                    while (fs.Read(b, 0, b.Length) > 0) {
-                        Console.WriteLine("read {0} at date {1}", temp.GetString(b), DateTime.Now.ToLocalTime());
-                        str += temp.GetString(b);
-                    }
-                    Console.WriteLine("done!");
-                }*/
                 byte[] b = File.ReadAllBytes(file.FullName);
                 UTF8Encoding temp = new UTF8Encoding(true);
                 str = temp.GetString(b);

@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.IO;
+using System.Windows.Forms;
 
 namespace GUI
 {
@@ -28,8 +29,11 @@ namespace GUI
             
 
             bool success = this.data.TryGetValue("Filename", out this.url);
+            this.url = this.url.Replace(url, "");
+            this.url = this.url.Replace("./", "");
+            url = url.Replace("./", "");
             if (success) {
-                this.url = (url.EndsWith("/") ? url : url + "/") + this.url;
+                //this.url = (url.EndsWith("/") ? url : url + "/") + this.url;
                 if (url.EndsWith("php") || url.EndsWith("/")) {
                     this.url = url + this.url;
                 } else {
@@ -79,9 +83,13 @@ namespace GUI
             string file = directory + "/" + (this.package == null ? this.name : this.package) + ".deb";
 
             if (!Directory.Exists(directory))Directory.CreateDirectory(directory);
-
-            using (var wc = new System.Net.WebClient()) {
-                wc.DownloadFile(this.url, file);
+            try {
+                using (var wc = new System.Net.WebClient()) {
+                    wc.DownloadFile(this.url, file);
+                }
+            } catch (System.Net.WebException e) {
+                MessageBox.Show(e.Message, this.url + " " + file + "   Error");
+                Application.Exit();
             }
         }
     }

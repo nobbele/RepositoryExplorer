@@ -27,21 +27,16 @@ namespace GUI
             RefreshProgress.SetProgressNoAnimation(50);
             ReloadRepos();
             RefreshProgress.SetProgressNoAnimation(100);
-            /*RepoBox.Items.Clear();
-            foreach (Repo r in repos) {
-                Console.WriteLine(r.ToString());
-                RepoBox.Items.Add(r);
-            }*/
         }
         private void RefreshAll() {
             List<string> reponames = new List<string>();
 
-            foreach(Repo r in repos) {
+            foreach (Repo r in repos) {
                 reponames.Add(r.url);
             }
             repos.Clear();
             RefreshBar.Value = 0;
-            foreach(string name in reponames) {
+            foreach (string name in reponames) {
                 RefreshProgress.SetProgressNoAnimation(0);
                 repos.Add(new Repo(name, RefreshProgress));
                 RefreshProgress.SetProgressNoAnimation(100);
@@ -54,7 +49,7 @@ namespace GUI
         }
         private void ReloadRepoBox() {
             RepoBox.Items.Clear();
-            foreach(Repo r in repos) {
+            foreach (Repo r in repos) {
                 RepoBox.Items.Add(r);
             }
         }
@@ -70,7 +65,7 @@ namespace GUI
                         MessageBox.Show(t.ToString());
                     }
                 }
-         
+
                 copyitemspart2();
             }
         }
@@ -87,17 +82,22 @@ namespace GUI
             int index = ik;
             if (index < 0) index = 0;
             if (index >= repos.Count) index = repos.Count;
-            rep = repos[index];
+            try {
+                rep = repos[index];
 
-            Reponame.Text = rep.name;
-            Packages.Items.Clear();
-            copyitems();
+                Reponame.Text = rep.name;
+                Packages.Items.Clear();
+                copyitems();
+            } catch (System.NullReferenceException e) {
+                MessageBox.Show(e.Message, (rep == null).ToString() + (rep != null ? rep.name : ""));
+                Application.Exit();
+            }
         }
         private void AddRepo(string url, string srchdir = "") {
             if (!url.EndsWith("/")) url += "/";
             Repo r = new Repo(url, RefreshProgress, srchdir);
-            foreach(Repo rep in repos) {
-                if(rep.name == r.name) {
+            foreach (Repo rep in repos) {
+                if (rep.name == r.name) {
                     return;
                 }
             }
@@ -111,6 +111,7 @@ namespace GUI
 
                 //Fix for coolstar's weird description
                 string orig = File.ReadAllText(dataname);
+                Helper.RemoveSpecialCharacters(orig);
                 File.Delete(dataname);
                 File.WriteAllText(dataname, orig);
 
@@ -132,15 +133,6 @@ namespace GUI
         private void Packages_ItemCheck_1(object sender, ItemCheckEventArgs e) {
 
             Package packtochange = (Package)Packages.Items[e.Index];
-            /*if (e.CurrentValue == CheckState.Unchecked) {
-                if (selected.ContainsKey(packtochange.name))
-                    selected.Remove(packtochange.name);
-                packtochange.selected = true;
-                selected.Add(packtochange.name, packtochange);
-            } else {
-                selected.Remove(packtochange.name);
-                packtochange.selected = true;
-            }*/
             if (!rep.sel.Contains(packtochange)) {
                 rep.sel.Add(packtochange);
                 packtochange.selected = true;
@@ -182,17 +174,8 @@ namespace GUI
             }
         }
 
-        private void RepoBox_SelectedValueChanged(object sender, EventArgs e) {
-            ViewRepo(RepoBox.SelectedIndex);
-        }
-
         private void button1_Click(object sender, EventArgs e) {
             RefreshAll();
-        }
-        public delegate void AddPackage();
-        public AddPackage addpackage;
-        public void AddPackageMethod(Package pak) {
-
         }
         private void search_TextChanged(object sender, EventArgs e) {
             if (rep != null) {
@@ -266,33 +249,41 @@ namespace GUI
         }
 
         private void Defrep_Click(object sender, EventArgs e) {
+            RefreshProgress.SetProgressNoAnimation(0);
             DefaultRepos popup = new DefaultRepos();
             popup.ShowDialog();
-            MessageBox.Show("This will take a very very long time");
-            string url = "";
-            switch(popup.chosen) {
-                case "bigboss":
-                    url = "http://apt.thebigboss.org/repofiles/cydia";
-                    break;
-                case "modmyi":
-                    url = "http://apt.modmyi.com";
-                    break;
-                case "saurik":
-                    string lnk = "http://apt.saurik.com/dists/ios/";
-                    string srchdir = "main/binary-iphoneos-arm/";
-                    AddRepo(lnk, srchdir);
-                    url = "";
-                    break;
-                default:
-                    url = "";
-                    break;
+            if (!popup.chosen.MultiOrEquals("", null)) {
+                MessageBox.Show("This will take a very very long time");
+                string url = "";
+                switch (popup.chosen) {
+                    case "bigboss":
+                        url = "http://apt.thebigboss.org/repofiles/cydia";
+                        break;
+                    case "modmyi":
+                        url = "http://apt.modmyi.com";
+                        break;
+                    case "saurik":
+                        string lnk = "http://apt.saurik.com/dists/ios/";
+                        string srchdir = "main/binary-iphoneos-arm/";
+                        AddRepo(lnk, srchdir);
+                        url = "";
+                        break;
+                    default:
+                        url = "";
+                        break;
+                }
+                if (url != "") {
+                    Adddefault(url);
+                }
+                //ReloadRepoBox();
+                ReloadRepos();
+                RefreshProgress.SetProgressNoAnimation(100);
             }
-            if (url != "") {
-                Adddefault(url);
-            }
-            ReloadRepoBox();
         }
         private void ReloadRepos() {
+            SplashScreen splash = new SplashScreen();
+            splash.Show();
+            splash.Select();
             RepoBox.ClearSelected();
             Packages.ClearSelected();
 
@@ -362,20 +353,14 @@ namespace GUI
                 Directory.Delete(path, true);
             });
             ReloadRepoBox();
-        }
-        private void Main_Load(object sender, EventArgs e) {
-            /*this.Show();
-            this.Select();*/
-            SplashScreen splash = new SplashScreen();
-            splash.Show();
-            splash.Select();
-
-            ReloadRepos();
 
             splash.Hide();
             splash.Close();
             this.Show();
             this.Select();
+        }
+        private void Main_Load(object sender, EventArgs e) {
+            ReloadRepos();
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -389,6 +374,42 @@ namespace GUI
                 File.Delete(rep.name + ".repo");
                 ReloadRepos();
             }
+        }
+
+        private void RepoBox_SelectedIndexChanged(object sender, EventArgs e) {
+            ViewRepo(RepoBox.SelectedIndex);
+        }
+    }
+    public static class ExtensionMethods
+    {
+        public static void SetProgressNoAnimation(this ProgressBar pb, int value) {
+            // To get around the progressive animation, we need to move the 
+            // progress bar backwards.
+            if (value == pb.Maximum) {
+                // Special case as value can't be set greater than Maximum.
+                pb.Maximum = value + 1;     // Temporarily Increase Maximum
+                pb.Value = value + 1;       // Move past
+                pb.Maximum = value;         // Reset maximum
+            } else {
+                pb.Value = value + 1;       // Move past
+            }
+            pb.Value = value;               // Move to correct value
+        }
+        public static bool MultiAndEquals(this object me, params object[] args) {
+            for (int i = 0; i < args.Length; i++) {
+                if (me != args[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static bool MultiOrEquals(this object me, params object[] args) {
+            for (int i = 0; i < args.Length; i++) {
+                if (me == args[i]) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

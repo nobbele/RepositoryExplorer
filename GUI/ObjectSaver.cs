@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace GUI
@@ -21,6 +22,7 @@ namespace GUI
             try {
                 var serializer = new XmlSerializer(typeof(T));
                 writer = new StreamWriter(filePath, append);
+                
                 serializer.Serialize(writer, objectToWrite);
             } finally {
                 if (writer != null)
@@ -36,10 +38,13 @@ namespace GUI
         /// <param name="filePath">The file path to read the object instance from.</param>
         /// <returns>Returns a new instance of the object read from the XML file.</returns>
         public static T ReadFromXmlFile<T>(string filePath) where T : new() {
-            TextReader reader = null;
+            XmlReader reader = null;
             try {
                 var serializer = new XmlSerializer(typeof(T));
-                reader = new StreamReader(filePath);
+                //reader = new StreamReader(filePath, true);
+                XmlReaderSettings settings = new XmlReaderSettings();
+                settings.CheckCharacters = false;
+                reader = XmlReader.Create(filePath, settings);
                 return (T)serializer.Deserialize(reader);
             } finally {
                 if (reader != null)
