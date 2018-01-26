@@ -25,7 +25,6 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.Reponame = new System.Windows.Forms.Label();
             this.EnterRepo = new System.Windows.Forms.TextBox();
             this.Refresh = new System.Windows.Forms.Button();
             this.RefreshProgress = new System.Windows.Forms.ProgressBar();
@@ -65,17 +64,14 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.RepoBox = new System.Windows.Forms.ListBox();
+            this.RepInf = new System.Windows.Forms.GroupBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.RepURL = new System.Windows.Forms.LinkLabel();
+            this.RepNam = new System.Windows.Forms.Label();
             this.Info.SuspendLayout();
+            this.RepInf.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // Reponame
-            // 
-            this.Reponame.AutoSize = true;
-            this.Reponame.Location = new System.Drawing.Point(386, 9);
-            this.Reponame.Name = "Reponame";
-            this.Reponame.Size = new System.Drawing.Size(118, 13);
-            this.Reponame.TabIndex = 0;
-            this.Reponame.Text = "Placeholder Reponame";
             // 
             // EnterRepo
             // 
@@ -432,7 +428,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(791, 300);
+            this.button5.Location = new System.Drawing.Point(5, 140);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 27;
@@ -449,14 +445,66 @@
             this.RepoBox.TabIndex = 28;
             this.RepoBox.SelectedIndexChanged += new System.EventHandler(this.RepoBox_SelectedIndexChanged);
             // 
+            // RepInf
+            // 
+            this.RepInf.Controls.Add(this.label16);
+            this.RepInf.Controls.Add(this.label15);
+            this.RepInf.Controls.Add(this.RepURL);
+            this.RepInf.Controls.Add(this.RepNam);
+            this.RepInf.Controls.Add(this.button5);
+            this.RepInf.Location = new System.Drawing.Point(801, 300);
+            this.RepInf.Name = "RepInf";
+            this.RepInf.Size = new System.Drawing.Size(330, 169);
+            this.RepInf.TabIndex = 29;
+            this.RepInf.TabStop = false;
+            this.RepInf.Text = "Repo Info";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 29);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(32, 13);
+            this.label16.TabIndex = 31;
+            this.label16.Text = "URL:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 16);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(38, 13);
+            this.label15.TabIndex = 30;
+            this.label15.Text = "Name:";
+            // 
+            // RepURL
+            // 
+            this.RepURL.AutoSize = true;
+            this.RepURL.Location = new System.Drawing.Point(38, 29);
+            this.RepURL.Name = "RepURL";
+            this.RepURL.Size = new System.Drawing.Size(29, 13);
+            this.RepURL.TabIndex = 29;
+            this.RepURL.TabStop = true;
+            this.RepURL.Text = "URL";
+            this.RepURL.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.RepURL_LinkClicked);
+            // 
+            // RepNam
+            // 
+            this.RepNam.AutoSize = true;
+            this.RepNam.Location = new System.Drawing.Point(46, 16);
+            this.RepNam.Name = "RepNam";
+            this.RepNam.Size = new System.Drawing.Size(35, 13);
+            this.RepNam.TabIndex = 28;
+            this.RepNam.Text = "Name";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.Controls.Add(this.RepInf);
             this.Controls.Add(this.RepoBox);
-            this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.defrep);
             this.Controls.Add(this.direc);
@@ -476,7 +524,6 @@
             this.Controls.Add(this.RefreshProgress);
             this.Controls.Add(this.Refresh);
             this.Controls.Add(this.EnterRepo);
-            this.Controls.Add(this.Reponame);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.HelpButton = true;
@@ -485,14 +532,14 @@
             this.Load += new System.EventHandler(this.Main_Load);
             this.Info.ResumeLayout(false);
             this.Info.PerformLayout();
+            this.RepInf.ResumeLayout(false);
+            this.RepInf.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label Reponame;
         private System.Windows.Forms.TextBox EnterRepo;
         private System.Windows.Forms.Button Refresh;
         private System.Windows.Forms.ProgressBar RefreshProgress;
@@ -532,6 +579,11 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.ListBox RepoBox;
+        private System.Windows.Forms.GroupBox RepInf;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.LinkLabel RepURL;
+        private System.Windows.Forms.Label RepNam;
     }
 }
 

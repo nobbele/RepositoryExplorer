@@ -23,7 +23,13 @@ namespace GUI
 
         private void Refresh_Click(object sender, EventArgs e) {
             RefreshProgress.SetProgressNoAnimation(0);
-            AddRepo(EnterRepo.Text);
+            try {
+                AddRepo(EnterRepo.Text);
+            } catch (System.Net.WebException) {
+                RefreshProgress.SetProgressNoAnimation(100);
+                MessageBox.Show("Make sure you entered a valid repo, must start with http:// or https://");
+                return;
+            }
             RefreshProgress.SetProgressNoAnimation(50);
             ReloadRepos();
             RefreshProgress.SetProgressNoAnimation(100);
@@ -85,7 +91,9 @@ namespace GUI
             try {
                 rep = repos[index];
 
-                Reponame.Text = rep.name;
+                RepNam.Text = rep.name;
+                RepURL.Text = rep.url;
+
                 Packages.Items.Clear();
                 copyitems();
             } catch (System.NullReferenceException e) {
@@ -93,7 +101,7 @@ namespace GUI
                 Application.Exit();
             }
         }
-        private void AddRepo(string url, string srchdir = "") {
+        private void AddRepo(string url, string srchdir = "", bool defaultrep=false) {
             if (!url.EndsWith("/")) url += "/";
             Repo r = new Repo(url, RefreshProgress, srchdir);
             foreach (Repo rep in repos) {
@@ -102,6 +110,7 @@ namespace GUI
                 }
             }
             if (r.packages != null && r.name != null) {
+                r.defaultsource = defaultrep;
                 repos.Add(r);
             }
             if (r != null && r.name != null) {
@@ -242,7 +251,7 @@ namespace GUI
             string lnk = toadd + "/dists/stable/";
             string srchdir = "main/binary-iphoneos-arm/";
             try {
-                AddRepo(lnk, srchdir);
+                AddRepo(lnk, srchdir, true);
             } catch (Exception e) {
                 MessageBox.Show(e.Message);
             }
@@ -251,33 +260,36 @@ namespace GUI
         private void Defrep_Click(object sender, EventArgs e) {
             RefreshProgress.SetProgressNoAnimation(0);
             DefaultRepos popup = new DefaultRepos();
-            popup.ShowDialog();
-            if (!popup.chosen.MultiOrEquals("", null)) {
-                MessageBox.Show("This will take a very very long time");
-                string url = "";
-                switch (popup.chosen) {
-                    case "bigboss":
-                        url = "http://apt.thebigboss.org/repofiles/cydia";
-                        break;
-                    case "modmyi":
-                        url = "http://apt.modmyi.com";
-                        break;
-                    case "saurik":
-                        string lnk = "http://apt.saurik.com/dists/ios/";
-                        string srchdir = "main/binary-iphoneos-arm/";
-                        AddRepo(lnk, srchdir);
-                        url = "";
-                        break;
-                    default:
-                        url = "";
-                        break;
+            try {
+                popup.ShowDialog();
+                if (!popup.chosen.MultiOrEquals("", null)) {
+                    MessageBox.Show("This will take a very very long time");
+                    string url = "";
+                    switch (popup.chosen) {
+                        case "bigboss":
+                            url = "http://apt.thebigboss.org/repofiles/cydia";
+                            break;
+                        case "modmyi":
+                            url = "http://apt.modmyi.com";
+                            break;
+                        case "saurik":
+                            string lnk = "http://apt.saurik.com/dists/ios/";
+                            string srchdir = "main/binary-iphoneos-arm/";
+                            AddRepo(lnk, srchdir);
+                            url = "";
+                            break;
+                        default:
+                            url = "";
+                            break;
+                    }
+                    if (url != "") {
+                        Adddefault(url);
+                    }
+                    ReloadRepos();
+                    RefreshProgress.SetProgressNoAnimation(100);
                 }
-                if (url != "") {
-                    Adddefault(url);
-                }
-                //ReloadRepoBox();
-                ReloadRepos();
-                RefreshProgress.SetProgressNoAnimation(100);
+            } catch (System.ObjectDisposedException) {
+                
             }
         }
         private void ReloadRepos() {
@@ -378,6 +390,20 @@ namespace GUI
 
         private void RepoBox_SelectedIndexChanged(object sender, EventArgs e) {
             ViewRepo(RepoBox.SelectedIndex);
+        }
+
+        private void RepURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+            LinkLabel l = sender as LinkLabel;
+            Console.WriteLine(l.Text);
+            if (l.Text != "URL") {
+                try {
+                    Console.WriteLine("Opening link " + l.Text);
+                    System.Diagnostics.Process.Start(l.Text);
+                    l.LinkVisited = true;
+                } catch (System.ComponentModel.Win32Exception ex) {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
     }
     public static class ExtensionMethods
