@@ -14,20 +14,21 @@ namespace GUI
         public string package;
         public string section;
         public string depends;
+        public string filename;
         public int size;
         public string md5;
         public string version;
         public string description;
+        public string debloc;
 
         public bool selected;
         public Package() {
 
         }
-        public Package(SerializableDictionaryString _data, string url) {
+        public Package(SerializableDictionaryString _data, string url, string debloc="") {
 
             this.data = _data;
             
-
             bool success = this.data.TryGetValue("Filename", out this.url);
             this.url = this.url.Replace(url, "");
             this.url = this.url.Replace("./", "");
@@ -42,6 +43,9 @@ namespace GUI
             } else {
                 this.url = "Invalid";
             }
+            this.debloc = debloc;
+            if (this.debloc == "") this.debloc = this.url;
+
             if (!this.data.TryGetValue("Name", out this.name)) {
                 print("No name for a package from {0}", this.url);
                 this.name = "Unknown name";
@@ -49,7 +53,8 @@ namespace GUI
             if (!this.data.TryGetValue("Package", out this.package)) print("No package id for {0}", this.name);
             if (!this.data.TryGetValue("Section", out this.section)) print("No section for {0}", this.name);
             if (!this.data.TryGetValue("Depends", out this.depends)) print("No depends for {0}", this.name);
-            if (!this.data.TryGetValue("Version", out this.version)) print("No depends for {0}", this.name);
+            if (!this.data.TryGetValue("Version", out this.version)) print("No version for {0}", this.name);
+            if (!this.data.TryGetValue("Filename", out this.filename)) print("No filename for {0}", this.name);
             string _size = "";
             this.data.TryGetValue("Size", out _size);
             if (!int.TryParse(_size, out this.size))
@@ -76,16 +81,13 @@ namespace GUI
             if (p == null) return false;
             return (this.name == p.name);
         }
-        public override int GetHashCode() {
-            return size * (selected ? 1 : 0) / this.name.GetHashCode() * 17;
-        }
         public void download(string directory) {
             string file = directory + "/" + (this.package == null ? this.name : this.package) + ".deb";
 
             if (!Directory.Exists(directory))Directory.CreateDirectory(directory);
             try {
                 using (var wc = new System.Net.WebClient()) {
-                    wc.DownloadFile(this.url, file);
+                    wc.DownloadFile(this.debloc, file);
                 }
             } catch (System.Net.WebException e) {
                 MessageBox.Show(e.Message, this.url + " " + file + "   Error");

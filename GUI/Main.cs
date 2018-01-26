@@ -35,18 +35,19 @@ namespace GUI
             RefreshProgress.SetProgressNoAnimation(100);
         }
         private void RefreshAll() {
-            List<string> reponames = new List<string>();
+            List<Repo> reponames = new List<Repo>();
 
             foreach (Repo r in repos) {
-                reponames.Add(r.url);
+                reponames.Add(r);
             }
             repos.Clear();
             RefreshBar.Value = 0;
-            foreach (string name in reponames) {
+            foreach (Repo r in reponames) {
                 RefreshProgress.SetProgressNoAnimation(0);
-                repos.Add(new Repo(name, RefreshProgress));
-                RefreshProgress.SetProgressNoAnimation(100);
 
+                repos.Add(new Repo(r.url, RefreshProgress, r.srchdir, r.debloc));
+
+                RefreshProgress.SetProgressNoAnimation(100);
                 int newval = RefreshBar.Value + (100 / reponames.Count);
                 if (newval > 100) RefreshBar.SetProgressNoAnimation(100);
                 else RefreshBar.SetProgressNoAnimation(newval);
@@ -101,9 +102,9 @@ namespace GUI
                 Application.Exit();
             }
         }
-        private void AddRepo(string url, string srchdir = "", bool defaultrep=false) {
+        private void AddRepo(string url, string srchdir = "", bool defaultrep=false, string decloc="") {
             if (!url.EndsWith("/")) url += "/";
-            Repo r = new Repo(url, RefreshProgress, srchdir);
+            Repo r = new Repo(url, RefreshProgress, srchdir, decloc);
             foreach (Repo rep in repos) {
                 if (rep.name == r.name) {
                     return;
@@ -125,7 +126,7 @@ namespace GUI
                 File.WriteAllText(dataname, orig);
 
 
-                string zipname = r.name + ".repo";
+                string zipname = r.name.Replace('/', '.') + ".repo";
                 ZipOutputStream zip = new ZipOutputStream(File.Create(zipname));
 
                 string folderName = r.name;
@@ -232,10 +233,13 @@ namespace GUI
             Repo r = repos[selind];
             Package pak;
             try {
-                pak = r.packages.Values.ToArray<Package>()[Packages.SelectedIndex];
+                
+                pak = Packages.SelectedItem as Package;
+                //pak = r.packages.TryGetValue(null, out null);
             } catch (IndexOutOfRangeException ex) {
                 pak = r.packages.Values.Last<Package>();
             }
+            if (pak == null) return;
             name.Text = pak.name;
             packageid.Text = pak.package;
             section.Text = pak.section;
@@ -243,20 +247,18 @@ namespace GUI
             size.Text = pak.size.ToString();
             description.Text = pak.description;
             depends.Text = pak.depends;
-            URL.Text = pak.url;
+            URL.Text = (r.defaultsource ? pak.debloc + "/" + pak.filename : pak.url);
             version.Text = pak.version;
             URL.LinkVisited = false;
         }
-        private void Adddefault(string toadd) {
-            string lnk = toadd + "/dists/stable/";
-            string srchdir = "main/binary-iphoneos-arm/";
+        private void Adddefault(string toadd, string decloc, string srchdir, string dist) {
+            string lnk = toadd + dist;
             try {
-                AddRepo(lnk, srchdir, true);
+                AddRepo(lnk, srchdir, true, decloc);
             } catch (Exception e) {
                 MessageBox.Show(e.Message);
             }
         }
-
         private void Defrep_Click(object sender, EventArgs e) {
             RefreshProgress.SetProgressNoAnimation(0);
             DefaultRepos popup = new DefaultRepos();
@@ -265,25 +267,30 @@ namespace GUI
                 if (!popup.chosen.MultiOrEquals("", null)) {
                     MessageBox.Show("This will take a very very long time");
                     string url = "";
+                    string decloc = "";
+                    string srchdir = "main/binary-iphoneos-arm/";
+                    string dist = "/dists/stable/";
                     switch (popup.chosen) {
                         case "bigboss":
                             url = "http://apt.thebigboss.org/repofiles/cydia";
+                            decloc = url;
                             break;
                         case "modmyi":
                             url = "http://apt.modmyi.com";
+                            decloc = url;
                             break;
                         case "saurik":
-                            string lnk = "http://apt.saurik.com/dists/ios/";
-                            string srchdir = "main/binary-iphoneos-arm/";
-                            AddRepo(lnk, srchdir);
-                            url = "";
+                            url = "http://apt.saurik.com/dists/ios/";
+                            srchdir = "/main/binary-iphoneos-arm/";
+                            dist = "";
+                            decloc = "http://apt.saurik.com/";
                             break;
                         default:
                             url = "";
                             break;
                     }
                     if (url != "") {
-                        Adddefault(url);
+                        Adddefault(url, decloc, srchdir, dist);
                     }
                     ReloadRepos();
                     RefreshProgress.SetProgressNoAnimation(100);

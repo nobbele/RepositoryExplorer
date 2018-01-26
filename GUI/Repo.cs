@@ -19,10 +19,15 @@ namespace GUI
         public string url;
         public string name;
         public bool defaultsource;
+        public string debloc;
+        public string srchdir;
         public Repo() {
             
         }
-        public Repo(string url, ProgressBar RefreshProgress, string srchdir = "") {
+        public Repo(string url, ProgressBar RefreshProgress, string srchdir = "", string debloc="") {
+            this.debloc = debloc;
+            this.srchdir = srchdir;
+            if (this.debloc == "") this.debloc = url;
             selected = new List<Package>();
             sel = new List<Package>();
             RefreshProgress.SetProgressNoAnimation(0);
@@ -53,6 +58,7 @@ namespace GUI
             RefreshProgress.SetProgressNoAnimation(5); // 15
 
             this.data.TryGetValue("Label", out this.name); // Grabs repo name and puts it in this.name
+            this.name = this.name.Replace('/', '.');
             string dir = this.name; // Repo directory
             if (dir == null) return;
             string to = dir + (dir.EndsWith("/") ? "Release" : "/Release");
@@ -109,8 +115,9 @@ namespace GUI
                     }
                     string name = "";
                     if (packagedatadict.TryGetValue("Name", out name)) {
+                        name = name.Replace('/', '.');
                         try {
-                            this.packages.Add(name, new Package(packagedatadict, this.url));
+                            this.packages.Add(name, new Package(packagedatadict, this.url, this.debloc));
                         } catch (ArgumentException e) {
                             string ver = "";
                             packagedatadict.TryGetValue("Version", out ver);
@@ -120,7 +127,7 @@ namespace GUI
                             bool isnewer = Helper.Versioncheck(ver, p.version);
                             if (isnewer) {
                                 this.packages.Remove(name);
-                                this.packages.Add(name, new Package(packagedatadict, this.url));
+                                this.packages.Add(name, new Package(packagedatadict, this.url, this.debloc));
                             }
                         }
                     } else {

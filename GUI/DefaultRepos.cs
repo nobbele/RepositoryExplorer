@@ -35,6 +35,7 @@ namespace GUI
 
             names.Add("bigboss");
             names.Add("modmyi");
+            names.Add("saurik");
 
             List<string> repos = new List<string>();
 
