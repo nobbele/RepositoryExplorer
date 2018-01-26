@@ -12,41 +12,27 @@ namespace GUI
 {
     public partial class DefaultRepos : Form
     {
-        private Image fromfile(string name) {
-            string file = Environment.CurrentDirectory + "/resources/" + name + ".ico";
-            try {
-                return Image.FromFile(file);
-            } catch (System.IO.FileNotFoundException) {
-                MessageBox.Show("Couldn't find " + file + ", please redownload the program");
-                return null;
-            }
+        private void addrep(string r, Icon img) {
+            imageList.Images.Add(r, img);
+            ListViewItem i = view.Items.Add(r);
+            i.ImageKey = r;
         }
+        ImageList imageList;
         public string chosen;
         public DefaultRepos() {
             InitializeComponent();
 
             chosen = "";
 
-            var imageList = new ImageList();
+            imageList = new ImageList();
 
             view.LargeImageList = imageList;
 
-            List<string> names = new List<string>();
+            addrep("bigboss", Properties.Resources.bigboss);
+            addrep("modmyi", Properties.Resources.modmyi);
+            addrep("saurik", Properties.Resources.saurik);
 
-            names.Add("bigboss");
-            names.Add("modmyi");
-            names.Add("saurik");
 
-            List<string> repos = new List<string>();
-
-            foreach (string r in names) {
-                Image img = fromfile(r);
-                if (img != null) {
-                    imageList.Images.Add(r, img);
-                    ListViewItem i = view.Items.Add(r);
-                    i.ImageKey = r;
-                }
-            }
             if (view.Items.Count < 1) {
                 this.Close();
             }
