@@ -28,6 +28,7 @@ namespace GUI
             this.debloc = debloc;
             this.srchdir = srchdir;
             if (this.debloc == "") this.debloc = url;
+            Console.WriteLine("Debloc: {0}", this.debloc);
             selected = new List<Package>();
             sel = new List<Package>();
             RefreshProgress.SetProgressNoAnimation(0);

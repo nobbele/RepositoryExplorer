@@ -9,17 +9,9 @@ namespace GUI
     public class Package
     {
         public SerializableDictionaryString data;
-        public string url;
-        public string name;
-        public string package;
-        public string section;
-        public string depends;
-        public string filename;
-        public int size;
-        public string md5;
-        public string version;
-        public string description;
+        public string url, name, package, section, depends, filename, md5, version, description, depiction;
         public string debloc;
+        public long size;
 
         public bool selected;
         public Package() {
@@ -55,9 +47,10 @@ namespace GUI
             if (!this.data.TryGetValue("Depends", out this.depends)) print("No depends for {0}", this.name);
             if (!this.data.TryGetValue("Version", out this.version)) print("No version for {0}", this.name);
             if (!this.data.TryGetValue("Filename", out this.filename)) print("No filename for {0}", this.name);
+            if (!this.data.TryGetValue("Depiction", out this.depiction)) print("No filename for {0}", this.name);
             string _size = "";
             this.data.TryGetValue("Size", out _size);
-            if (!int.TryParse(_size, out this.size))
+            if (!long.TryParse(_size, out this.size))
                 print("Invalid size for {0}", this.package);
             if (!this.data.TryGetValue("MD5sum", out this.md5)) print("No MD5sum for {0}", this.name);
             if (!this.data.TryGetValue("Description", out this.description)) print("No description for {0}", this.name);
@@ -83,8 +76,13 @@ namespace GUI
         }
         public void download(string directory) {
             string file = directory + "/" + (this.package == null ? this.name : this.package) + ".deb";
-
-            if (!Directory.Exists(directory))Directory.CreateDirectory(directory);
+            try {
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+            } catch (System.ArgumentException) {
+                directory = "debs";
+                if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
+                file = directory + "/" + (this.package == null ? this.name : this.package) + ".deb";
+            }
             try {
                 using (var wc = new System.Net.WebClient()) {
                     wc.DownloadFile(this.debloc, file);

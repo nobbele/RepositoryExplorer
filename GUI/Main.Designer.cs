@@ -69,8 +69,11 @@
             this.label15 = new System.Windows.Forms.Label();
             this.RepURL = new System.Windows.Forms.LinkLabel();
             this.RepNam = new System.Windows.Forms.Label();
+            this.DepictionView = new System.Windows.Forms.WebBrowser();
+            this.Depiction = new System.Windows.Forms.GroupBox();
             this.Info.SuspendLayout();
             this.RepInf.SuspendLayout();
+            this.Depiction.SuspendLayout();
             this.SuspendLayout();
             // 
             // EnterRepo
@@ -184,9 +187,9 @@
             this.Info.Controls.Add(this.packageid);
             this.Info.Controls.Add(this.label2);
             this.Info.Controls.Add(this.name);
-            this.Info.Location = new System.Drawing.Point(797, 26);
+            this.Info.Location = new System.Drawing.Point(816, 26);
             this.Info.Name = "Info";
-            this.Info.Size = new System.Drawing.Size(340, 268);
+            this.Info.Size = new System.Drawing.Size(352, 190);
             this.Info.TabIndex = 11;
             this.Info.TabStop = false;
             this.Info.Text = "Info";
@@ -233,7 +236,7 @@
             // 
             this.description.Location = new System.Drawing.Point(75, 120);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(259, 102);
+            this.description.Size = new System.Drawing.Size(265, 59);
             this.description.TabIndex = 17;
             this.description.Text = "Description";
             // 
@@ -364,7 +367,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(797, 546);
+            this.button2.Location = new System.Drawing.Point(1174, 126);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(125, 23);
             this.button2.TabIndex = 20;
@@ -374,7 +377,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(928, 546);
+            this.button3.Location = new System.Drawing.Point(1305, 126);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(128, 23);
             this.button3.TabIndex = 21;
@@ -384,7 +387,7 @@
             // 
             // Downloadprogress
             // 
-            this.Downloadprogress.Location = new System.Drawing.Point(798, 517);
+            this.Downloadprogress.Location = new System.Drawing.Point(1174, 194);
             this.Downloadprogress.Name = "Downloadprogress";
             this.Downloadprogress.Size = new System.Drawing.Size(258, 23);
             this.Downloadprogress.TabIndex = 22;
@@ -392,7 +395,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(798, 498);
+            this.label13.Location = new System.Drawing.Point(1174, 178);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(99, 13);
             this.label13.TabIndex = 23;
@@ -400,7 +403,7 @@
             // 
             // direc
             // 
-            this.direc.Location = new System.Drawing.Point(797, 475);
+            this.direc.Location = new System.Drawing.Point(1174, 155);
             this.direc.Name = "direc";
             this.direc.Size = new System.Drawing.Size(178, 20);
             this.direc.TabIndex = 24;
@@ -408,7 +411,7 @@
             // 
             // defrep
             // 
-            this.defrep.Location = new System.Drawing.Point(875, 600);
+            this.defrep.Location = new System.Drawing.Point(1143, 625);
             this.defrep.Name = "defrep";
             this.defrep.Size = new System.Drawing.Size(125, 23);
             this.defrep.TabIndex = 25;
@@ -418,7 +421,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(981, 475);
+            this.button4.Location = new System.Drawing.Point(1358, 155);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 26;
@@ -428,7 +431,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(5, 140);
+            this.button5.Location = new System.Drawing.Point(9, 45);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 27;
@@ -452,9 +455,9 @@
             this.RepInf.Controls.Add(this.RepURL);
             this.RepInf.Controls.Add(this.RepNam);
             this.RepInf.Controls.Add(this.button5);
-            this.RepInf.Location = new System.Drawing.Point(801, 300);
+            this.RepInf.Location = new System.Drawing.Point(1174, 26);
             this.RepInf.Name = "RepInf";
-            this.RepInf.Size = new System.Drawing.Size(330, 169);
+            this.RepInf.Size = new System.Drawing.Size(259, 94);
             this.RepInf.TabIndex = 29;
             this.RepInf.TabStop = false;
             this.RepInf.Text = "Repo Info";
@@ -497,12 +500,35 @@
             this.RepNam.TabIndex = 28;
             this.RepNam.Text = "Name";
             // 
+            // DepictionView
+            // 
+            this.DepictionView.AllowNavigation = false;
+            this.DepictionView.AllowWebBrowserDrop = false;
+            this.DepictionView.Location = new System.Drawing.Point(1, 7);
+            this.DepictionView.MinimumSize = new System.Drawing.Size(20, 20);
+            this.DepictionView.Name = "DepictionView";
+            this.DepictionView.ScriptErrorsSuppressed = true;
+            this.DepictionView.Size = new System.Drawing.Size(642, 371);
+            this.DepictionView.TabIndex = 30;
+            this.DepictionView.WebBrowserShortcutsEnabled = false;
+            this.DepictionView.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.DepictionView_DocumentCompleted);
+            // 
+            // Depiction
+            // 
+            this.Depiction.Controls.Add(this.DepictionView);
+            this.Depiction.Location = new System.Drawing.Point(816, 222);
+            this.Depiction.Name = "Depiction";
+            this.Depiction.Size = new System.Drawing.Size(644, 380);
+            this.Depiction.TabIndex = 31;
+            this.Depiction.TabStop = false;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1149, 661);
+            this.ClientSize = new System.Drawing.Size(1472, 660);
+            this.Controls.Add(this.Depiction);
             this.Controls.Add(this.RepInf);
             this.Controls.Add(this.RepoBox);
             this.Controls.Add(this.button4);
@@ -534,6 +560,7 @@
             this.Info.PerformLayout();
             this.RepInf.ResumeLayout(false);
             this.RepInf.PerformLayout();
+            this.Depiction.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -584,6 +611,8 @@
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.LinkLabel RepURL;
         private System.Windows.Forms.Label RepNam;
+        private System.Windows.Forms.WebBrowser DepictionView;
+        private System.Windows.Forms.GroupBox Depiction;
     }
 }
 

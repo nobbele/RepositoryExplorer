@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Core;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 
 namespace GUI
 {
@@ -240,6 +241,11 @@ namespace GUI
                 pak = r.packages.Values.Last<Package>();
             }
             if (pak == null) return;
+            if (pak.depiction != null) {
+                Uri loc = new Uri(pak.depiction);
+                DepictionView.AllowNavigation = true;
+                DepictionView.Navigate(loc);
+            }
             name.Text = pak.name;
             packageid.Text = pak.package;
             section.Text = pak.section;
@@ -280,7 +286,7 @@ namespace GUI
                             decloc = url;
                             break;
                         case "saurik":
-                            url = "http://apt.saurik.com/dists/ios/";
+                            url = "http://apt.saurik.com/dists/ios";
                             srchdir = "/main/binary-iphoneos-arm/";
                             dist = "";
                             decloc = "http://apt.saurik.com/";
@@ -378,7 +384,33 @@ namespace GUI
             this.Show();
             this.Select();
         }
+        private void SetReg() {
+            int BrowserVer, RegVal;
+
+            // get the installed IE version
+            using (WebBrowser Wb = new WebBrowser())
+                BrowserVer = Wb.Version.Major;
+
+            // set the appropriate IE version
+            if (BrowserVer >= 11)
+                RegVal = 11001;
+            else if (BrowserVer == 10)
+                RegVal = 10001;
+            else if (BrowserVer == 9)
+                RegVal = 9999;
+            else if (BrowserVer == 8)
+                RegVal = 8888;
+            else
+                RegVal = 7000;
+
+            // set the actual key
+            using (RegistryKey Key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                if (Key.GetValue(System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".exe") == null)
+                    Key.SetValue(System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".exe", RegVal, RegistryValueKind.DWord);
+        }
         private void Main_Load(object sender, EventArgs e) {
+            SetReg();
+
             ReloadRepos();
         }
 
@@ -411,6 +443,10 @@ namespace GUI
                     Console.WriteLine(ex.Message);
                 }
             }
+        }
+
+        private void DepictionView_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
+            DepictionView.AllowNavigation = false;
         }
     }
     public static class ExtensionMethods
