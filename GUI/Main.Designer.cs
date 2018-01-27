@@ -57,8 +57,6 @@
             this.label12 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.Downloadprogress = new System.Windows.Forms.ProgressBar();
-            this.label13 = new System.Windows.Forms.Label();
             this.direc = new System.Windows.Forms.TextBox();
             this.defrep = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
@@ -71,6 +69,14 @@
             this.RepNam = new System.Windows.Forms.Label();
             this.DepictionView = new System.Windows.Forms.WebBrowser();
             this.Depiction = new System.Windows.Forms.GroupBox();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.host = new System.Windows.Forms.TextBox();
+            this.password = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.port = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
             this.Info.SuspendLayout();
             this.RepInf.SuspendLayout();
             this.Depiction.SuspendLayout();
@@ -189,7 +195,7 @@
             this.Info.Controls.Add(this.name);
             this.Info.Location = new System.Drawing.Point(816, 26);
             this.Info.Name = "Info";
-            this.Info.Size = new System.Drawing.Size(352, 190);
+            this.Info.Size = new System.Drawing.Size(352, 219);
             this.Info.TabIndex = 11;
             this.Info.TabStop = false;
             this.Info.Text = "Info";
@@ -236,7 +242,7 @@
             // 
             this.description.Location = new System.Drawing.Point(75, 120);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(265, 59);
+            this.description.Size = new System.Drawing.Size(265, 96);
             this.description.TabIndex = 17;
             this.description.Text = "Description";
             // 
@@ -385,35 +391,20 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // Downloadprogress
-            // 
-            this.Downloadprogress.Location = new System.Drawing.Point(1174, 194);
-            this.Downloadprogress.Name = "Downloadprogress";
-            this.Downloadprogress.Size = new System.Drawing.Size(258, 23);
-            this.Downloadprogress.TabIndex = 22;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(1174, 178);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(99, 13);
-            this.label13.TabIndex = 23;
-            this.label13.Text = "Download Progress";
-            // 
             // direc
             // 
-            this.direc.Location = new System.Drawing.Point(1174, 155);
+            this.direc.Location = new System.Drawing.Point(1174, 225);
             this.direc.Name = "direc";
             this.direc.Size = new System.Drawing.Size(178, 20);
             this.direc.TabIndex = 24;
             this.direc.Text = "debs";
+            this.direc.TextChanged += new System.EventHandler(this.direc_TextChanged);
             // 
             // defrep
             // 
-            this.defrep.Location = new System.Drawing.Point(1143, 625);
+            this.defrep.Location = new System.Drawing.Point(1143, 629);
             this.defrep.Name = "defrep";
-            this.defrep.Size = new System.Drawing.Size(125, 23);
+            this.defrep.Size = new System.Drawing.Size(112, 24);
             this.defrep.TabIndex = 25;
             this.defrep.Text = "Add Default Repo";
             this.defrep.UseVisualStyleBackColor = true;
@@ -421,7 +412,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(1358, 155);
+            this.button4.Location = new System.Drawing.Point(1358, 222);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 26;
@@ -504,11 +495,11 @@
             // 
             this.DepictionView.AllowNavigation = false;
             this.DepictionView.AllowWebBrowserDrop = false;
-            this.DepictionView.Location = new System.Drawing.Point(1, 7);
+            this.DepictionView.Location = new System.Drawing.Point(6, 19);
             this.DepictionView.MinimumSize = new System.Drawing.Size(20, 20);
             this.DepictionView.Name = "DepictionView";
             this.DepictionView.ScriptErrorsSuppressed = true;
-            this.DepictionView.Size = new System.Drawing.Size(642, 371);
+            this.DepictionView.Size = new System.Drawing.Size(632, 342);
             this.DepictionView.TabIndex = 30;
             this.DepictionView.WebBrowserShortcutsEnabled = false;
             this.DepictionView.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.DepictionView_DocumentCompleted);
@@ -516,11 +507,82 @@
             // Depiction
             // 
             this.Depiction.Controls.Add(this.DepictionView);
-            this.Depiction.Location = new System.Drawing.Point(816, 222);
+            this.Depiction.Location = new System.Drawing.Point(816, 251);
             this.Depiction.Name = "Depiction";
-            this.Depiction.Size = new System.Drawing.Size(644, 380);
+            this.Depiction.Size = new System.Drawing.Size(644, 351);
             this.Depiction.TabIndex = 31;
             this.Depiction.TabStop = false;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(1174, 155);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(125, 23);
+            this.button6.TabIndex = 32;
+            this.button6.Text = "Install All Selected";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(1305, 155);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(128, 23);
+            this.button7.TabIndex = 33;
+            this.button7.Text = "Install Current";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // host
+            // 
+            this.host.Location = new System.Drawing.Point(1174, 199);
+            this.host.Name = "host";
+            this.host.Size = new System.Drawing.Size(141, 20);
+            this.host.TabIndex = 34;
+            // 
+            // password
+            // 
+            this.password.Location = new System.Drawing.Point(1321, 199);
+            this.password.Name = "password";
+            this.password.Size = new System.Drawing.Size(106, 20);
+            this.password.TabIndex = 35;
+            this.password.UseSystemPasswordChar = true;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(1174, 183);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(58, 13);
+            this.label13.TabIndex = 36;
+            this.label13.Text = "IP Address";
+            this.label13.Click += new System.EventHandler(this.label13_Click);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(1318, 183);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(53, 13);
+            this.label17.TabIndex = 37;
+            this.label17.Text = "Password";
+            // 
+            // port
+            // 
+            this.port.Location = new System.Drawing.Point(1433, 199);
+            this.port.Name = "port";
+            this.port.Size = new System.Drawing.Size(27, 20);
+            this.port.TabIndex = 38;
+            this.port.Text = "22";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(1430, 183);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(26, 13);
+            this.label18.TabIndex = 39;
+            this.label18.Text = "Port";
             // 
             // Main
             // 
@@ -528,14 +590,20 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1472, 660);
+            this.Controls.Add(this.label18);
+            this.Controls.Add(this.port);
+            this.Controls.Add(this.label17);
+            this.Controls.Add(this.label13);
+            this.Controls.Add(this.password);
+            this.Controls.Add(this.host);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.Depiction);
             this.Controls.Add(this.RepInf);
             this.Controls.Add(this.RepoBox);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.defrep);
             this.Controls.Add(this.direc);
-            this.Controls.Add(this.label13);
-            this.Controls.Add(this.Downloadprogress);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label12);
@@ -597,8 +665,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.ProgressBar Downloadprogress;
-        private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label version;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.TextBox direc;
@@ -613,6 +679,14 @@
         private System.Windows.Forms.Label RepNam;
         private System.Windows.Forms.WebBrowser DepictionView;
         private System.Windows.Forms.GroupBox Depiction;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.TextBox host;
+        private System.Windows.Forms.TextBox password;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox port;
+        private System.Windows.Forms.Label label18;
     }
 }
 

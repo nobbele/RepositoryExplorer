@@ -9,7 +9,7 @@ namespace GUI
     public class Package
     {
         public SerializableDictionaryString data;
-        public string url, name, package, section, depends, filename, md5, version, description, depiction;
+        public string url, name, package, section, depends, filename, md5, version, description, depiction, todownload;
         public string debloc;
         public long size;
 
@@ -54,6 +54,7 @@ namespace GUI
                 print("Invalid size for {0}", this.package);
             if (!this.data.TryGetValue("MD5sum", out this.md5)) print("No MD5sum for {0}", this.name);
             if (!this.data.TryGetValue("Description", out this.description)) print("No description for {0}", this.name);
+            this.todownload = this.debloc + "/" + this.filename;
 
         }
         public void print(object obj) {
@@ -74,8 +75,11 @@ namespace GUI
             if (p == null) return false;
             return (this.name == p.name);
         }
+        public string getdebname() {
+            return (this.package == null ? this.name : this.package) + ".deb";
+        }
         public void download(string directory) {
-            string file = directory + "/" + (this.package == null ? this.name : this.package) + ".deb";
+            string file = directory + "/" + getdebname();
             try {
                 if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
             } catch (System.ArgumentException) {
@@ -85,10 +89,11 @@ namespace GUI
             }
             try {
                 using (var wc = new System.Net.WebClient()) {
-                    wc.DownloadFile(this.debloc, file);
+                    wc.DownloadFile(this.todownload, file);
                 }
             } catch (System.Net.WebException e) {
-                MessageBox.Show("Couldn't download package " + this.name + " (This will be shown on paid packages, if this package is not paid please contact 4pplecracker on twitter or reddit");
+                Console.WriteLine("loc: " + this.debloc + "/" + this.filename);
+                MessageBox.Show("Couldn't download package " + this.name + " (This will be shown on paid packages, if this package is not paid please contact 4pplecracker on twitter or reddit\n" + e.Message);
             }
         }
     }

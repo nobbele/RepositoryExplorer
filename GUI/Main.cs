@@ -7,6 +7,8 @@ using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Core;
 using System.Threading.Tasks;
 using Microsoft.Win32;
+using System.Diagnostics;
+using Renci.SshNet;
 
 namespace GUI
 {
@@ -63,8 +65,7 @@ namespace GUI
         }
         private void copyitems() {
             if (rep.packages != null) {
-                CheckedListBox temp;
-                boxes.TryGetValue(rep.name, out temp);
+                boxes.TryGetValue(rep.name, out CheckedListBox temp);
 
                 if (!(temp == null)) Packages.Items.AddRange(temp.Items);
                 else {
@@ -96,8 +97,10 @@ namespace GUI
                 RepNam.Text = rep.name;
                 RepURL.Text = rep.url;
 
+                Packages.BeginUpdate();
                 Packages.Items.Clear();
                 copyitems();
+                Packages.EndUpdate();
             } catch (System.NullReferenceException e) {
                 MessageBox.Show(e.Message, (rep == null).ToString() + (rep != null ? rep.name : ""));
                 Application.Exit();
@@ -188,40 +191,54 @@ namespace GUI
         private void button1_Click(object sender, EventArgs e) {
             RefreshAll();
         }
-        private void search_TextChanged(object sender, EventArgs e) {
+        private void Search(Object myObject, EventArgs myEventArgs) {
             if (rep != null) {
+                Packages.BeginUpdate(); 
                 Packages.Items.Clear();
                 foreach (Package pak in rep.packages.Values) {
                     if (pak != null && pak.ToString().ToLower().Contains(search.Text.ToLower())) {
-                        Packages.Items.Add(pak);
+                        int i = Packages.Items.Add(pak);
+                        if (pak.selected) {
+                            Packages.SetItemChecked(i, true);
+                        }
                     }
                 }
+                Packages.EndUpdate();
             }
+            searchdelay.Stop();
+        }
+
+        private Timer searchdelay;
+        private void search_TextChanged(object sender, EventArgs e) {
+            if (searchdelay != null) searchdelay.Stop();
+            searchdelay = new Timer();
+            searchdelay.Interval = 500;
+
+            searchdelay.Tick += Search;
+
+            searchdelay.Start();
         }
         // Download all
         private void button2_Click(object sender, EventArgs e) {
             foreach (Repo re in repos) {
-                Downloadprogress.SetProgressNoAnimation(0);
                 if (re.sel.Count > 0) {
                     int toadd = 100 / re.sel.Count;
                     foreach (Package p in re.sel) {
                         if (p != null) {
                             Console.WriteLine(p);
                             p.download(direc.Text);
-                            int newval = Downloadprogress.Value + toadd;
-                            if (newval > 100) newval = 100;
-                            Downloadprogress.SetProgressNoAnimation(newval);
                         }
                     }
                 }
             }
-            Downloadprogress.SetProgressNoAnimation(100);
+            MessageBox.Show("Done!");
         }
 
         private void button3_Click(object sender, EventArgs e) {
             Package p = Packages.SelectedItem as Package;
             if (p != null) {
                 p.download(direc.Text);
+                MessageBox.Show("Done!");
             } else {
                 MessageBox.Show("No package selected (you must double click on a package to select it");
             }
@@ -412,6 +429,17 @@ namespace GUI
             SetReg();
 
             ReloadRepos();
+
+            if (!File.Exists("tics/settings")) {
+                string[] def = new string[3];
+                File.WriteAllLines("tics/settings", def);
+            }
+            string[] data = File.ReadAllLines("tics/settings"); //get ssh settings
+            for (int i = 0; i != data.Length; i++) {
+                data[i] = data[i].Split('#')[0];
+            }
+            host.Text = data[0];
+            password.Text = data[2];
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -447,6 +475,96 @@ namespace GUI
 
         private void DepictionView_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             DepictionView.AllowNavigation = false;
+        }
+        string join(List<string> s, string i) {
+            string temp = "";
+            foreach (string j in s) {
+                temp += '"' + j + '"' + i;
+            }
+            return temp;
+        }
+        //Credits to u/josephwalden for creating the tic.exe program
+        private void installelectra(FileInfo deb) {
+            string[] data = { host.Text, "root", password.Text };
+            File.WriteAllLines("settings", data);
+            Process.Start("tic.exe", "dont-update " + "install " + deb.FullName);
+            File.Delete("settings");
+        }
+        private void installnormal(FileInfo deb) {
+            int p = 21;
+            int.TryParse(port.Text, out p);
+
+            string path = "/tmp/" + deb.Name;
+            using (var client = new SftpClient(host.Text, p, "root", password.Text)) {
+                client.Connect();
+
+                FileStream fileStream = new FileStream(deb.FullName, FileMode.Open);
+                if (client.IsConnected) {
+                    if (fileStream != null) {
+                        //If you have a folder located at sftp://ftp.example.com/share
+                        //then you can add this like:
+                        client.UploadFile(fileStream, path, null);
+                        client.Disconnect();
+                        client.Dispose();
+                    }
+                }
+
+                /*FileStream file = new FileStream(deb.FullName, FileMode.Open);
+                string path = "/tmp";
+
+                client.BufferSize = 4 * 1024;
+                client.UploadFile(file, path);*/
+            }
+            using (var client = new SshClient(host.Text, p, "root", password.Text)) {
+                client.Connect();
+                
+                var r = client.RunCommand("dpkg -i " + path);
+                Console.WriteLine(r.Result);
+                client.RunCommand("rm " + path);
+                client.Disconnect();
+            }
+        }
+        private void installpackage(FileInfo deb, bool electra=false) {
+            if (electra) installelectra(deb);
+            else installnormal(deb);
+        }
+        //Install all checked in packages
+        private void button6_Click(object sender, EventArgs e) {
+            DialogResult t =  MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
+            bool electra = (t == DialogResult.Yes);
+            foreach (Repo re in repos) {
+                if (re.sel.Count > 0) {
+                    foreach (Package p in re.sel) {
+                        if (p != null) {
+                            Console.WriteLine(p);
+                            string path = direc.Text + "/" + p.getdebname();
+                            if (!File.Exists(path)) {
+                                string url = (re.defaultsource ? p.debloc + "/" + p.filename : p.url);
+                                p.download(direc.Text);
+                            }
+                            FileInfo deb = new FileInfo(path);
+                            try {
+                                installpackage(deb, electra);
+                            } catch (FileNotFoundException) {
+                                MessageBox.Show("Could not install package");
+                            }
+                        }
+                    }
+                }
+            }
+            MessageBox.Show("Done!");
+        }
+
+        private void button7_Click(object sender, EventArgs e) {
+
+        }
+
+        private void direc_TextChanged(object sender, EventArgs e) {
+
+        }
+
+        private void label13_Click(object sender, EventArgs e) {
+
         }
     }
     public static class ExtensionMethods
