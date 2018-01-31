@@ -487,7 +487,7 @@ namespace GUI
         private void installelectra(FileInfo deb) {
             string[] data = { host.Text, "root", password.Text };
             File.WriteAllLines("settings", data);
-            Process.Start("tic.exe", "dont-update " + "install " + deb.FullName);
+            Process.Start("tics/tic.exe", "dont-update " + "install " + deb.FullName);
             File.Delete("settings");
         }
         private void installnormal(FileInfo deb) {
