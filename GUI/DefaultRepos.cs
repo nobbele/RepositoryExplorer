@@ -1,42 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GUI
 {
     public partial class DefaultRepos : Form
     {
-        private Image fromfile(string name) {
-            string file = Environment.CurrentDirectory + "/resources/" + name + ".ico";
-            return Image.FromFile(file);
+        private void addrep(string r, Icon img) {
+            imageList.Images.Add(r, img);
+            ListViewItem i = view.Items.Add(r);
+            i.ImageKey = r;
         }
+        ImageList imageList;
         public string chosen;
         public DefaultRepos() {
             InitializeComponent();
 
             chosen = "";
 
-            var imageList = new ImageList();
+            imageList = new ImageList();
 
             view.LargeImageList = imageList;
 
-            List<string> repos = new List<string>();
-            repos.Add("bigboss");
-            repos.Add("modmyi");
+            addrep("bigboss", Properties.Resources.bigboss);
+            addrep("modmyi", Properties.Resources.modmyi);
+            addrep("saurik", Properties.Resources.saurik);
 
 
-            foreach (string r in repos) {
-                imageList.Images.Add(r, fromfile(r));
-            }
-            foreach (string r in repos) {
-                ListViewItem i = view.Items.Add(r);
-                i.ImageKey = r;
+            if (view.Items.Count < 1) {
+                this.Close();
             }
         }
 

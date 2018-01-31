@@ -6,6 +6,9 @@ using System.Windows.Forms;
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Core;
 using System.Threading.Tasks;
+using Microsoft.Win32;
+using System.Diagnostics;
+using Renci.SshNet;
 
 namespace GUI
 {
@@ -23,24 +26,31 @@ namespace GUI
 
         private void Refresh_Click(object sender, EventArgs e) {
             RefreshProgress.SetProgressNoAnimation(0);
-            AddRepo(EnterRepo.Text);
+            try {
+                AddRepo(EnterRepo.Text);
+            } catch (System.Net.WebException) {
+                RefreshProgress.SetProgressNoAnimation(100);
+                MessageBox.Show("Make sure you entered a valid repo, must start with http:// or https://");
+                return;
+            }
             RefreshProgress.SetProgressNoAnimation(50);
             ReloadRepos();
             RefreshProgress.SetProgressNoAnimation(100);
         }
         private void RefreshAll() {
-            List<string> reponames = new List<string>();
+            List<Repo> reponames = new List<Repo>();
 
             foreach (Repo r in repos) {
-                reponames.Add(r.url);
+                reponames.Add(r);
             }
             repos.Clear();
             RefreshBar.Value = 0;
-            foreach (string name in reponames) {
+            foreach (Repo r in reponames) {
                 RefreshProgress.SetProgressNoAnimation(0);
-                repos.Add(new Repo(name, RefreshProgress));
-                RefreshProgress.SetProgressNoAnimation(100);
 
+                repos.Add(new Repo(r.url, RefreshProgress, r.srchdir, r.debloc));
+
+                RefreshProgress.SetProgressNoAnimation(100);
                 int newval = RefreshBar.Value + (100 / reponames.Count);
                 if (newval > 100) RefreshBar.SetProgressNoAnimation(100);
                 else RefreshBar.SetProgressNoAnimation(newval);
@@ -55,8 +65,7 @@ namespace GUI
         }
         private void copyitems() {
             if (rep.packages != null) {
-                CheckedListBox temp;
-                boxes.TryGetValue(rep.name, out temp);
+                boxes.TryGetValue(rep.name, out CheckedListBox temp);
 
                 if (!(temp == null)) Packages.Items.AddRange(temp.Items);
                 else {
@@ -85,23 +94,28 @@ namespace GUI
             try {
                 rep = repos[index];
 
-                Reponame.Text = rep.name;
+                RepNam.Text = rep.name;
+                RepURL.Text = rep.url;
+
+                Packages.BeginUpdate();
                 Packages.Items.Clear();
                 copyitems();
+                Packages.EndUpdate();
             } catch (System.NullReferenceException e) {
                 MessageBox.Show(e.Message, (rep == null).ToString() + (rep != null ? rep.name : ""));
                 Application.Exit();
             }
         }
-        private void AddRepo(string url, string srchdir = "") {
+        private void AddRepo(string url, string srchdir = "", bool defaultrep=false, string decloc="") {
             if (!url.EndsWith("/")) url += "/";
-            Repo r = new Repo(url, RefreshProgress, srchdir);
+            Repo r = new Repo(url, RefreshProgress, srchdir, decloc);
             foreach (Repo rep in repos) {
                 if (rep.name == r.name) {
                     return;
                 }
             }
             if (r.packages != null && r.name != null) {
+                r.defaultsource = defaultrep;
                 repos.Add(r);
             }
             if (r != null && r.name != null) {
@@ -116,7 +130,7 @@ namespace GUI
                 File.WriteAllText(dataname, orig);
 
 
-                string zipname = r.name + ".repo";
+                string zipname = r.name.Replace('/', '.') + ".repo";
                 ZipOutputStream zip = new ZipOutputStream(File.Create(zipname));
 
                 string folderName = r.name;
@@ -177,40 +191,54 @@ namespace GUI
         private void button1_Click(object sender, EventArgs e) {
             RefreshAll();
         }
-        private void search_TextChanged(object sender, EventArgs e) {
+        private void Search(Object myObject, EventArgs myEventArgs) {
             if (rep != null) {
+                Packages.BeginUpdate(); 
                 Packages.Items.Clear();
                 foreach (Package pak in rep.packages.Values) {
                     if (pak != null && pak.ToString().ToLower().Contains(search.Text.ToLower())) {
-                        Packages.Items.Add(pak);
+                        int i = Packages.Items.Add(pak);
+                        if (pak.selected) {
+                            Packages.SetItemChecked(i, true);
+                        }
                     }
                 }
+                Packages.EndUpdate();
             }
+            searchdelay.Stop();
+        }
+
+        private Timer searchdelay;
+        private void search_TextChanged(object sender, EventArgs e) {
+            if (searchdelay != null) searchdelay.Stop();
+            searchdelay = new Timer();
+            searchdelay.Interval = 500;
+
+            searchdelay.Tick += Search;
+
+            searchdelay.Start();
         }
         // Download all
         private void button2_Click(object sender, EventArgs e) {
             foreach (Repo re in repos) {
-                Downloadprogress.SetProgressNoAnimation(0);
                 if (re.sel.Count > 0) {
                     int toadd = 100 / re.sel.Count;
                     foreach (Package p in re.sel) {
                         if (p != null) {
                             Console.WriteLine(p);
                             p.download(direc.Text);
-                            int newval = Downloadprogress.Value + toadd;
-                            if (newval > 100) newval = 100;
-                            Downloadprogress.SetProgressNoAnimation(newval);
                         }
                     }
                 }
             }
-            Downloadprogress.SetProgressNoAnimation(100);
+            MessageBox.Show("Done!");
         }
 
         private void button3_Click(object sender, EventArgs e) {
             Package p = Packages.SelectedItem as Package;
             if (p != null) {
                 p.download(direc.Text);
+                MessageBox.Show("Done!");
             } else {
                 MessageBox.Show("No package selected (you must double click on a package to select it");
             }
@@ -223,9 +251,17 @@ namespace GUI
             Repo r = repos[selind];
             Package pak;
             try {
-                pak = r.packages.Values.ToArray<Package>()[Packages.SelectedIndex];
+                
+                pak = Packages.SelectedItem as Package;
+                //pak = r.packages.TryGetValue(null, out null);
             } catch (IndexOutOfRangeException ex) {
                 pak = r.packages.Values.Last<Package>();
+            }
+            if (pak == null) return;
+            if (pak.depiction != null) {
+                Uri loc = new Uri(pak.depiction);
+                DepictionView.AllowNavigation = true;
+                DepictionView.Navigate(loc);
             }
             name.Text = pak.name;
             packageid.Text = pak.package;
@@ -234,50 +270,56 @@ namespace GUI
             size.Text = pak.size.ToString();
             description.Text = pak.description;
             depends.Text = pak.depends;
-            URL.Text = pak.url;
+            URL.Text = (r.defaultsource ? pak.debloc + "/" + pak.filename : pak.url);
             version.Text = pak.version;
             URL.LinkVisited = false;
         }
-        private void Adddefault(string toadd) {
-            string lnk = toadd + "/dists/stable/";
-            string srchdir = "main/binary-iphoneos-arm/";
+        private void Adddefault(string toadd, string decloc, string srchdir, string dist) {
+            string lnk = toadd + dist;
             try {
-                AddRepo(lnk, srchdir);
+                AddRepo(lnk, srchdir, true, decloc);
             } catch (Exception e) {
                 MessageBox.Show(e.Message);
             }
         }
-
         private void Defrep_Click(object sender, EventArgs e) {
             RefreshProgress.SetProgressNoAnimation(0);
             DefaultRepos popup = new DefaultRepos();
-            popup.ShowDialog();
-            if (!popup.chosen.MultiOrEquals("", null)) {
-                MessageBox.Show("This will take a very very long time");
-                string url = "";
-                switch (popup.chosen) {
-                    case "bigboss":
-                        url = "http://apt.thebigboss.org/repofiles/cydia";
-                        break;
-                    case "modmyi":
-                        url = "http://apt.modmyi.com";
-                        break;
-                    case "saurik":
-                        string lnk = "http://apt.saurik.com/dists/ios/";
-                        string srchdir = "main/binary-iphoneos-arm/";
-                        AddRepo(lnk, srchdir);
-                        url = "";
-                        break;
-                    default:
-                        url = "";
-                        break;
+            try {
+                popup.ShowDialog();
+                if (!popup.chosen.MultiOrEquals("", null)) {
+                    MessageBox.Show("This will take a very very long time");
+                    string url = "";
+                    string decloc = "";
+                    string srchdir = "main/binary-iphoneos-arm/";
+                    string dist = "/dists/stable/";
+                    switch (popup.chosen) {
+                        case "bigboss":
+                            url = "http://apt.thebigboss.org/repofiles/cydia";
+                            decloc = url;
+                            break;
+                        case "modmyi":
+                            url = "http://apt.modmyi.com";
+                            decloc = url;
+                            break;
+                        case "saurik":
+                            url = "http://apt.saurik.com/dists/ios";
+                            srchdir = "/main/binary-iphoneos-arm/";
+                            dist = "";
+                            decloc = "http://apt.saurik.com/";
+                            break;
+                        default:
+                            url = "";
+                            break;
+                    }
+                    if (url != "") {
+                        Adddefault(url, decloc, srchdir, dist);
+                    }
+                    ReloadRepos();
+                    RefreshProgress.SetProgressNoAnimation(100);
                 }
-                if (url != "") {
-                    Adddefault(url);
-                }
-                //ReloadRepoBox();
-                ReloadRepos();
-                RefreshProgress.SetProgressNoAnimation(100);
+            } catch (System.ObjectDisposedException) {
+                
             }
         }
         private void ReloadRepos() {
@@ -359,8 +401,45 @@ namespace GUI
             this.Show();
             this.Select();
         }
+        private void SetReg() {
+            int BrowserVer, RegVal;
+
+            // get the installed IE version
+            using (WebBrowser Wb = new WebBrowser())
+                BrowserVer = Wb.Version.Major;
+
+            // set the appropriate IE version
+            if (BrowserVer >= 11)
+                RegVal = 11001;
+            else if (BrowserVer == 10)
+                RegVal = 10001;
+            else if (BrowserVer == 9)
+                RegVal = 9999;
+            else if (BrowserVer == 8)
+                RegVal = 8888;
+            else
+                RegVal = 7000;
+
+            // set the actual key
+            using (RegistryKey Key = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", RegistryKeyPermissionCheck.ReadWriteSubTree))
+                if (Key.GetValue(System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".exe") == null)
+                    Key.SetValue(System.Diagnostics.Process.GetCurrentProcess().ProcessName + ".exe", RegVal, RegistryValueKind.DWord);
+        }
         private void Main_Load(object sender, EventArgs e) {
+            SetReg();
+
             ReloadRepos();
+
+            if (!File.Exists("tics/settings")) {
+                string[] def = new string[3];
+                File.WriteAllLines("tics/settings", def);
+            }
+            string[] data = File.ReadAllLines("tics/settings"); //get ssh settings
+            for (int i = 0; i != data.Length; i++) {
+                data[i] = data[i].Split('#')[0];
+            }
+            host.Text = data[0];
+            password.Text = data[2];
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -378,6 +457,114 @@ namespace GUI
 
         private void RepoBox_SelectedIndexChanged(object sender, EventArgs e) {
             ViewRepo(RepoBox.SelectedIndex);
+        }
+
+        private void RepURL_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+            LinkLabel l = sender as LinkLabel;
+            Console.WriteLine(l.Text);
+            if (l.Text != "URL") {
+                try {
+                    Console.WriteLine("Opening link " + l.Text);
+                    System.Diagnostics.Process.Start(l.Text);
+                    l.LinkVisited = true;
+                } catch (System.ComponentModel.Win32Exception ex) {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        private void DepictionView_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
+            DepictionView.AllowNavigation = false;
+        }
+        string join(List<string> s, string i) {
+            string temp = "";
+            foreach (string j in s) {
+                temp += '"' + j + '"' + i;
+            }
+            return temp;
+        }
+        //Credits to u/josephwalden for creating the tic.exe program
+        private void installelectra(FileInfo deb) {
+            string[] data = { host.Text, "root", password.Text };
+            File.WriteAllLines("settings", data);
+            Process.Start("tics/tic.exe", "dont-update " + "install " + deb.FullName);
+            File.Delete("settings");
+        }
+        private void installnormal(FileInfo deb) {
+            int p = 21;
+            int.TryParse(port.Text, out p);
+
+            string path = "/tmp/" + deb.Name;
+            using (var client = new SftpClient(host.Text, p, "root", password.Text)) {
+                client.Connect();
+
+                FileStream fileStream = new FileStream(deb.FullName, FileMode.Open);
+                if (client.IsConnected) {
+                    if (fileStream != null) {
+                        //If you have a folder located at sftp://ftp.example.com/share
+                        //then you can add this like:
+                        client.UploadFile(fileStream, path, null);
+                        client.Disconnect();
+                        client.Dispose();
+                    }
+                }
+
+                /*FileStream file = new FileStream(deb.FullName, FileMode.Open);
+                string path = "/tmp";
+
+                client.BufferSize = 4 * 1024;
+                client.UploadFile(file, path);*/
+            }
+            using (var client = new SshClient(host.Text, p, "root", password.Text)) {
+                client.Connect();
+                
+                var r = client.RunCommand("dpkg -i " + path);
+                Console.WriteLine(r.Result);
+                client.RunCommand("rm " + path);
+                client.Disconnect();
+            }
+        }
+        private void installpackage(FileInfo deb, bool electra=false) {
+            if (electra) installelectra(deb);
+            else installnormal(deb);
+        }
+        //Install all checked in packages
+        private void button6_Click(object sender, EventArgs e) {
+            DialogResult t =  MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
+            bool electra = (t == DialogResult.Yes);
+            foreach (Repo re in repos) {
+                if (re.sel.Count > 0) {
+                    foreach (Package p in re.sel) {
+                        if (p != null) {
+                            Console.WriteLine(p);
+                            string path = direc.Text + "/" + p.getdebname();
+                            if (!File.Exists(path)) {
+                                string url = (re.defaultsource ? p.debloc + "/" + p.filename : p.url);
+                                p.download(direc.Text);
+                            }
+                            FileInfo deb = new FileInfo(path);
+                            try {
+                                installpackage(deb, electra);
+                            } catch (FileNotFoundException) {
+                                MessageBox.Show("Could not install package");
+                            }
+                        }
+                    }
+                }
+            }
+            MessageBox.Show("Done!");
+        }
+
+        private void button7_Click(object sender, EventArgs e) {
+
+        }
+
+        private void direc_TextChanged(object sender, EventArgs e) {
+
+        }
+
+        private void label13_Click(object sender, EventArgs e) {
+
         }
     }
     public static class ExtensionMethods

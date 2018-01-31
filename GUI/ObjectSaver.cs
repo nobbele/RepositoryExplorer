@@ -42,8 +42,9 @@ namespace GUI
             try {
                 var serializer = new XmlSerializer(typeof(T));
                 //reader = new StreamReader(filePath, true);
-                XmlReaderSettings settings = new XmlReaderSettings();
-                settings.CheckCharacters = false;
+                XmlReaderSettings settings = new XmlReaderSettings {
+                    CheckCharacters = false
+                };
                 reader = XmlReader.Create(filePath, settings);
                 return (T)serializer.Deserialize(reader);
             } finally {

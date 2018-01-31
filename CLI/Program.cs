@@ -36,14 +36,13 @@ namespace CLI
                     // TODO
                     continue;
                 }
-                Package pak;
-                if (r.packages.TryGetValue(search, out pak)) {
+                if (r.packages.TryGetValue(search, out Package pak)) {
                     Console.WriteLine(" Name: " + pak.name);
                     Console.WriteLine(" Description: " + pak.description);
                     Console.WriteLine(" Section: " + pak.section);
                     Console.WriteLine(" MD5: " + pak.md5);
                     Console.WriteLine(" Size: " + pak.size);
-                    Console.WriteLine(" Link: " +  pak.url);
+                    Console.WriteLine(" Link: " + pak.url);
                 } else {
                     Console.WriteLine("Package not found");
                 }
