@@ -428,18 +428,7 @@ namespace GUI
         private void Main_Load(object sender, EventArgs e) {
             SetReg();
 
-            ReloadRepos();
-
-            if (!File.Exists("tics/settings")) {
-                string[] def = new string[3];
-                File.WriteAllLines("tics/settings", def);
-            }
-            string[] data = File.ReadAllLines("tics/settings"); //get ssh settings
-            for (int i = 0; i != data.Length; i++) {
-                data[i] = data[i].Split('#')[0];
-            }
-            host.Text = data[0];
-            password.Text = data[2];
+            ReloadRepos();      
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -486,9 +475,9 @@ namespace GUI
         //Credits to u/josephwalden for creating the tic.exe program
         private void installelectra(FileInfo deb) {
             string[] data = { host.Text, "root", password.Text };
-            File.WriteAllLines("settings", data);
+            File.WriteAllLines("tics/settings", data);
             Process.Start("tics/tic.exe", "dont-update " + "install " + deb.FullName);
-            File.Delete("settings");
+            File.Delete("tics/settings");
         }
         private void installnormal(FileInfo deb) {
             int p = 21;
