@@ -539,6 +539,7 @@
             this.host.Name = "host";
             this.host.Size = new System.Drawing.Size(141, 20);
             this.host.TabIndex = 34;
+            this.host.TextChanged += new System.EventHandler(this.host_TextChanged);
             // 
             // password
             // 
@@ -574,6 +575,7 @@
             this.port.Size = new System.Drawing.Size(27, 20);
             this.port.TabIndex = 38;
             this.port.Text = "22";
+            this.port.TextChanged += new System.EventHandler(this.port_TextChanged);
             // 
             // label18
             // 

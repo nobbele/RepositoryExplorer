@@ -58,10 +58,12 @@ namespace GUI
             RefreshBar.SetProgressNoAnimation(100);
         }
         private void ReloadRepoBox() {
+            RepoBox.BeginUpdate();
             RepoBox.Items.Clear();
             foreach (Repo r in repos) {
                 RepoBox.Items.Add(r);
             }
+            RepoBox.EndUpdate();
         }
         private void copyitems() {
             if (rep.packages != null) {
@@ -435,11 +437,8 @@ namespace GUI
                 File.WriteAllLines("tics/settings", def);
             }
             string[] data = File.ReadAllLines("tics/settings"); //get ssh settings
-            for (int i = 0; i != data.Length; i++) {
-                data[i] = data[i].Split('#')[0];
-            }
             host.Text = data[0];
-            password.Text = data[2];
+            port.Text = data[1];
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -485,10 +484,20 @@ namespace GUI
         }
         //Credits to u/josephwalden for creating the tic.exe program
         private void installelectra(List<FileInfo> debs) {
-            string[] data = { host.Text, "root", password.Text };
+            string[] data = { host.Text, port.Text, password.Text };
             File.WriteAllLines("tics/settings", data);
             Process.Start("tics/tic.exe", "dont-update " + "install " + join(debs, " "));
             File.Delete("tics/settings");
+            string[] safedata = { host.Text, port.Text, "" };
+            File.WriteAllLines("tics/settings", safedata);
+        }
+        private void installelectrasingle(FileInfo deb) {
+            string[] data = { host.Text, port.Text, password.Text };
+            File.WriteAllLines("tics/settings", data);
+            Process.Start("tics/tic.exe", "dont-update " + "install " + deb);
+            File.Delete("tics/settings");
+            string[] safedata = { host.Text, port.Text, "" };
+            File.WriteAllLines("tics/settings", safedata);
         }
         private void installnormal(FileInfo deb) {
             int p = 21;
@@ -549,7 +558,18 @@ namespace GUI
         }
 
         private void button7_Click(object sender, EventArgs e) {
-
+            Package p = Packages.SelectedItem as Package;
+            DialogResult t = MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
+            bool electra = (t == DialogResult.Yes);
+            string path = direc.Text + "/" + p.getdebname();
+            if (!File.Exists(path)) {
+                string url = ((RepoBox.SelectedItem as Repo).defaultsource ? p.debloc + "/" + p.filename : p.url);
+                p.download(direc.Text);
+            }
+            if (electra) installelectrasingle(new FileInfo(path));
+            else {
+                installnormal(new FileInfo(path));
+            }
         }
 
         private void direc_TextChanged(object sender, EventArgs e) {
@@ -558,6 +578,16 @@ namespace GUI
 
         private void label13_Click(object sender, EventArgs e) {
 
+        }
+
+        private void host_TextChanged(object sender, EventArgs e) {
+            string[] safedata = { host.Text, port.Text, "" };
+            File.WriteAllLines("tics/settings", safedata);
+        }
+
+        private void port_TextChanged(object sender, EventArgs e) {
+            string[] safedata = { host.Text, port.Text, "" };
+            File.WriteAllLines("tics/settings", safedata);
         }
     }
     public static class ExtensionMethods
