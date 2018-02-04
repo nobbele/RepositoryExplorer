@@ -486,10 +486,9 @@ namespace GUI
         //Credits to u/josephwalden for creating the tic.exe program
         private void installelectra(List<FileInfo> debs) {
             string[] data = { host.Text, "root", password.Text };
-            File.WriteAllLines("settings", data);
-            //Process.Start("tics/tic.exe", "dont-update " + "install " + join(debs, " "));
-            Console.WriteLine("dont-update " + "install " + join(debs, " "));
-            File.Delete("settings");
+            File.WriteAllLines("tics/settings", data);
+            Process.Start("tics/tic.exe", "dont-update " + "install " + join(debs, " "));
+            File.Delete("tics/settings");
         }
         private void installnormal(FileInfo deb) {
             int p = 21;
