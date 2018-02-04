@@ -500,7 +500,7 @@ namespace GUI
             File.WriteAllLines("tics/settings", safedata);
         }
         private void installnormal(FileInfo deb) {
-            int p = 21;
+            int p = 22;
             int.TryParse(port.Text, out p);
 
             string path = "/tmp/" + deb.Name;
