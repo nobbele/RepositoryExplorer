@@ -150,9 +150,7 @@
     <Content Include="tics\jLib.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="tics\JMWCrypto.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="tics\JMWCrypto.dll" />
     <Content Include="tics\SevenZipExtractor.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

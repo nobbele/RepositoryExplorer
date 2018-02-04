@@ -476,18 +476,18 @@ namespace GUI
         private void DepictionView_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             DepictionView.AllowNavigation = false;
         }
-        string join(List<string> s, string i) {
+        string join(List<FileInfo> s, string i) {
             string temp = "";
-            foreach (string j in s) {
-                temp += '"' + j + '"' + i;
+            foreach (FileInfo j in s) {
+                temp += '"' + j.FullName + '"' + i;
             }
             return temp;
         }
         //Credits to u/josephwalden for creating the tic.exe program
-        private void installelectra(FileInfo deb) {
+        private void installelectra(List<FileInfo> debs) {
             string[] data = { host.Text, "root", password.Text };
             File.WriteAllLines("tics/settings", data);
-            Process.Start("tics/tic.exe", "dont-update " + "install " + deb.FullName);
+            Process.Start("tics/tic.exe", "dont-update " + "install " + join(debs, " "));
             File.Delete("tics/settings");
         }
         private void installnormal(FileInfo deb) {
@@ -501,20 +501,13 @@ namespace GUI
                 FileStream fileStream = new FileStream(deb.FullName, FileMode.Open);
                 if (client.IsConnected) {
                     if (fileStream != null) {
-                        //If you have a folder located at sftp://ftp.example.com/share
-                        //then you can add this like:
                         client.UploadFile(fileStream, path, null);
                         client.Disconnect();
                         client.Dispose();
                     }
                 }
-
-                /*FileStream file = new FileStream(deb.FullName, FileMode.Open);
-                string path = "/tmp";
-
-                client.BufferSize = 4 * 1024;
-                client.UploadFile(file, path);*/
             }
+            
             using (var client = new SshClient(host.Text, p, "root", password.Text)) {
                 client.Connect();
                 
@@ -524,14 +517,11 @@ namespace GUI
                 client.Disconnect();
             }
         }
-        private void installpackage(FileInfo deb, bool electra=false) {
-            if (electra) installelectra(deb);
-            else installnormal(deb);
-        }
         //Install all checked in packages
         private void button6_Click(object sender, EventArgs e) {
             DialogResult t =  MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
             bool electra = (t == DialogResult.Yes);
+            List<FileInfo> debs = new List<FileInfo>();
             foreach (Repo re in repos) {
                 if (re.sel.Count > 0) {
                     foreach (Package p in re.sel) {
@@ -542,14 +532,17 @@ namespace GUI
                                 string url = (re.defaultsource ? p.debloc + "/" + p.filename : p.url);
                                 p.download(direc.Text);
                             }
-                            FileInfo deb = new FileInfo(path);
-                            try {
-                                installpackage(deb, electra);
-                            } catch (FileNotFoundException) {
-                                MessageBox.Show("Could not install package");
-                            }
+                            //FileInfo deb = new FileInfo(path);
+                            debs.Add(new FileInfo(path));
+                            
                         }
                     }
+                }
+            }
+            if (electra) installelectra(debs);
+            else {
+                foreach (FileInfo deb in debs) {
+                    installnormal(deb);
                 }
             }
             MessageBox.Show("Done!");
