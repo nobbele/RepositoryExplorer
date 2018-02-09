@@ -14,6 +14,7 @@ namespace GUI
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.AutomaticDecompression = DecompressionMethods.GZip;
+            request.Headers.Add("X-Cydia-Cf", "1349.70");
             request.Headers.Add("X-Machine", device);
             request.Headers.Add("X-Cydia-Id", UDID);
             request.UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60 Safari/602.1 Cydia/1.1.30 CyF/1349.70";
