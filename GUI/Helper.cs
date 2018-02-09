@@ -13,23 +13,32 @@ namespace GUI
     class Helper
     {
         public const bool debug = false;
-        public static FileInfo Download(string file, string name) {
+        public static FileInfo DownloadWithName(string file, string name, string device="iPhone6,1", string UDID= "867ddda319d4761bbce3d211c44f454d268d3271") {
             string[] dir = name.Split('/');
             if(dir.Length > 1) Directory.CreateDirectory(dir[0]);
             using (var wc = new System.Net.WebClient()) {
+                wc.Headers.Add("X-Machine", device);
+                wc.Headers.Add("X-Unique-Id", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                wc.Headers.Add("X-Firmware", "10.1.1");
+                wc.Headers.Add("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60 Safari/602.1 Cydia/1.1.30 CyF/1349.70");
                 wc.DownloadFile(file, name);
             }
             string localpath = Directory.GetCurrentDirectory() + "/" + name;
             return (new FileInfo(localpath));
         }
-        public static FileInfo Download(string file) {
+        public static FileInfo Download(string file, string device = "iPhone6,1", string UDID = "867ddda319d4761bbce3d211c44f454d268d3271") {
             string[] split = file.Split('/');
             string name = split[split.Length - 1];
             if (name == "") {
                 name = split[split.Length - 2];
             }
-            using (var wc = new System.Net.WebClient())
+            using (var wc = new System.Net.WebClient()) {
+                wc.Headers.Add("X-Machine", device);
+                wc.Headers.Add("X-Unique-Id", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                wc.Headers.Add("X-Firmware", "10.1.1");
+                wc.Headers.Add("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60 Safari/602.1 Cydia/1.1.30 CyF/1349.70");
                 wc.DownloadFile(file, name);
+            }
             string localpath = Directory.GetCurrentDirectory() + "/" + name;
             return (new FileInfo(localpath));
         }
@@ -48,7 +57,7 @@ namespace GUI
             return str;
         }
         public static String ReadUrl(string url, string name) {
-            return ReadFileInfo(Download(url + (url.EndsWith("/") ? name : "/" + name), name));
+            return ReadFileInfo(DownloadWithName(url + (url.EndsWith("/") ? name : "/" + name), name));
         }
         // Extracts the file contained within a GZip to the target dir.
         // A GZip can contain only one file, which by default is named the same as the GZip except
@@ -86,7 +95,7 @@ namespace GUI
 
             if (type == "bz2") {
                 string bz2file = localfile + ".bz2";
-                FileInfo packagesfile = Helper.Download(url, bz2file);
+                FileInfo packagesfile = Helper.DownloadWithName(url, bz2file);
                 FileStream packagesbz2 = (FileStream)Helper.InfoToStream(packagesfile);
 
                 FileStream packages = File.Create(localfile);
@@ -94,7 +103,7 @@ namespace GUI
             }
             if (type == "gz") {
                 string gzfile = localfile + ".gz";
-                Helper.Download(url, gzfile);
+                Helper.DownloadWithName(url, gzfile);
                 ExtractGZipSample(gzfile, dir);
             }
         }

@@ -32,9 +32,9 @@ namespace GUI
             RefreshProgress.SetProgressNoAnimation(0);
             try {
                 AddRepo(EnterRepo.Text);
-            } catch (System.Net.WebException) {
+            } catch (System.Net.WebException ex) {
                 RefreshProgress.SetProgressNoAnimation(100);
-                MessageBox.Show("Make sure you entered a valid repo, must start with http:// or https://");
+                MessageBox.Show("Make sure you entered a valid repo, must start with http:// or https://, Error " + ex);
                 return;
             }
             RefreshProgress.SetProgressNoAnimation(50);
