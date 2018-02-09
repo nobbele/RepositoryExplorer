@@ -92,7 +92,6 @@ namespace GUI
                     wc.DownloadFile(this.todownload, file);
                 }
             } catch (System.Net.WebException e) {
-                Console.WriteLine("loc: " + this.debloc + "/" + this.filename);
                 MessageBox.Show("Couldn't download package " + this.name + " (This will be shown on paid packages, if this package is not paid please contact 4pplecracker on twitter or reddit\n" + e.Message);
             }
         }

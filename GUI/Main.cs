@@ -7,18 +7,22 @@ using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Core;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using System.Diagnostics;
-using Renci.SshNet;
+using System.Net;
 
 namespace GUI
 {
     public partial class Main : Form
     {
+        public static int reversion = 1;
         Dictionary<string, Package> selected;
         List<Package> toinstall;
         List<Repo> repos;
         Repo rep;
         Dictionary<string, CheckedListBox> boxes;
+        string _ip;
+        string _password;
+        string _port;
+        string _direc = "debs";
         public Main() {
             InitializeComponent();
             toinstall = new List<Package>();
@@ -44,18 +48,12 @@ namespace GUI
                 reponames.Add(r);
             }
             repos.Clear();
-            RefreshBar.Value = 0;
             foreach (Repo r in reponames) {
                 RefreshProgress.SetProgressNoAnimation(0);
 
                 repos.Add(new Repo(r.url, RefreshProgress, r.srchdir, r.debloc));
-
                 RefreshProgress.SetProgressNoAnimation(100);
-                int newval = RefreshBar.Value + (100 / reponames.Count);
-                if (newval > 100) RefreshBar.SetProgressNoAnimation(100);
-                else RefreshBar.SetProgressNoAnimation(newval);
             }
-            RefreshBar.SetProgressNoAnimation(100);
         }
         private void ReloadRepoBox() {
             RepoBox.BeginUpdate();
@@ -228,7 +226,7 @@ namespace GUI
                     foreach (Package p in re.sel) {
                         if (p != null) {
                             Console.WriteLine(p);
-                            p.download(direc.Text);
+                            p.download(_direc);
                         }
                     }
                 }
@@ -239,7 +237,7 @@ namespace GUI
         private void button3_Click(object sender, EventArgs e) {
             Package p = Packages.SelectedItem as Package;
             if (p != null) {
-                p.download(direc.Text);
+                p.download(_direc);
                 MessageBox.Show("Done!");
             } else {
                 MessageBox.Show("No package selected (you must double click on a package to select it");
@@ -274,6 +272,11 @@ namespace GUI
             depends.Text = pak.depends;
             URL.Text = (r.defaultsource ? pak.debloc + "/" + pak.filename : pak.url);
             version.Text = pak.version;
+            price.Text = CydiaAPI.getprice(pak.package);
+            button2.Enabled = price.Text == "Free";
+            button3.Enabled = price.Text == "Free";
+            button6.Enabled = price.Text == "Free";
+            button7.Enabled = price.Text == "Free";
             URL.LinkVisited = false;
         }
         private void Adddefault(string toadd, string decloc, string srchdir, string dist) {
@@ -320,8 +323,8 @@ namespace GUI
                     ReloadRepos();
                     RefreshProgress.SetProgressNoAnimation(100);
                 }
-            } catch (System.ObjectDisposedException) {
-                
+            } catch (System.ObjectDisposedException ex) {
+                MessageBox.Show("{0} disposed at Defrep_click()", ex.ObjectName);
             }
         }
         private void ReloadRepos() {
@@ -351,7 +354,6 @@ namespace GUI
                         Stream zipStream = zf.GetInputStream(zipEntry);
 
                         String fullZipToPath = Path.Combine(path, name);
-                        Console.WriteLine(fullZipToPath);
 
                         string directoryName = Path.GetDirectoryName(fullZipToPath);
                         if (directoryName.Length > 0)
@@ -380,6 +382,15 @@ namespace GUI
                 try {
                     string data = path + "/data.repodata";
                     Repo toadd = ObjectSaver.ReadFromXmlFile<Repo>(data);
+                    if (toadd.version < reversion) {
+                        toadd = new Repo(toadd.url, new ProgressBar(), toadd.srchdir, toadd.debloc);
+                    } else if(toadd.version > reversion) {
+                        
+                        DialogResult answer = MessageBox.Show("Colliding versions", toadd.name + " has been installed using a higher version of RepositoryExplorer. Do you want to update the repo to the new version? Answering no might lead to unexpected behaviour", MessageBoxButtons.YesNo);
+                        if (answer == DialogResult.Yes) {
+                            toadd = new Repo(toadd.url, new ProgressBar(), toadd.srchdir, toadd.debloc);
+                        }
+                    }
                     toadd.selected = new List<Package>();
                     toadd.sel = new List<Package>();
                     repos.Add(toadd);
@@ -432,19 +443,18 @@ namespace GUI
 
             ReloadRepos();
 
-            if (!File.Exists("tics/settings")) {
-                string[] def = new string[3];
-                File.WriteAllLines("tics/settings", def);
-            }
-            string[] data = File.ReadAllLines("tics/settings"); //get ssh settings
-            host.Text = data[0];
-            port.Text = data[1];
+            string[] data = Installer.getsettings();
+            _ip = data[0];
+            _port = data[1];
+            _ip = data[0];
+            _port = data[1];
+            _password = "";
         }
 
         private void button4_Click(object sender, EventArgs e) {
             FolderBrowserDialog f = new FolderBrowserDialog();
             f.ShowDialog();
-            direc.Text = f.SelectedPath;
+            _direc = f.SelectedPath;
         }
 
         private void button5_Click(object sender, EventArgs e) {
@@ -475,57 +485,8 @@ namespace GUI
         private void DepictionView_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             DepictionView.AllowNavigation = false;
         }
-        string join(List<FileInfo> s, string i) {
-            string temp = "";
-            foreach (FileInfo j in s) {
-                temp += '"' + j.FullName + '"' + i;
-            }
-            return temp;
-        }
-        //Credits to u/josephwalden for creating the tic.exe program
-        private void installelectra(List<FileInfo> debs) {
-            string[] data = { host.Text, port.Text, password.Text };
-            File.WriteAllLines("tics/settings", data);
-            Process.Start("tics/tic.exe", "dont-update " + "install " + join(debs, " "));
-            File.Delete("tics/settings");
-            string[] safedata = { host.Text, port.Text, "" };
-            File.WriteAllLines("tics/settings", safedata);
-        }
-        private void installelectrasingle(FileInfo deb) {
-            string[] data = { host.Text, port.Text, password.Text };
-            File.WriteAllLines("tics/settings", data);
-            Process.Start("tics/tic.exe", "dont-update " + "install " + deb);
-            File.Delete("tics/settings");
-            string[] safedata = { host.Text, port.Text, "" };
-            File.WriteAllLines("tics/settings", safedata);
-        }
-        private void installnormal(FileInfo deb) {
-            int p = 22;
-            int.TryParse(port.Text, out p);
-
-            string path = "/tmp/" + deb.Name;
-            using (var client = new SftpClient(host.Text, p, "root", password.Text)) {
-                client.Connect();
-
-                FileStream fileStream = new FileStream(deb.FullName, FileMode.Open);
-                if (client.IsConnected) {
-                    if (fileStream != null) {
-                        client.UploadFile(fileStream, path, null);
-                        client.Disconnect();
-                        client.Dispose();
-                    }
-                }
-            }
-            
-            using (var client = new SshClient(host.Text, p, "root", password.Text)) {
-                client.Connect();
-                
-                var r = client.RunCommand("dpkg -i " + path);
-                Console.WriteLine(r.Result);
-                client.RunCommand("rm " + path);
-                client.Disconnect();
-            }
-        }
+        
+        
         //Install all checked in packages
         private void button6_Click(object sender, EventArgs e) {
             DialogResult t =  MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
@@ -536,10 +497,10 @@ namespace GUI
                     foreach (Package p in re.sel) {
                         if (p != null) {
                             Console.WriteLine(p);
-                            string path = direc.Text + "/" + p.getdebname();
+                            string path = _direc + "/" + p.getdebname();
                             if (!File.Exists(path)) {
                                 string url = (re.defaultsource ? p.debloc + "/" + p.filename : p.url);
-                                p.download(direc.Text);
+                                p.download(_direc);
                             }
                             //FileInfo deb = new FileInfo(path);
                             debs.Add(new FileInfo(path));
@@ -548,46 +509,77 @@ namespace GUI
                     }
                 }
             }
-            if (electra) installelectra(debs);
+            if (electra) Installer.installelectra(debs, _ip, _port, _password);
             else {
                 foreach (FileInfo deb in debs) {
-                    installnormal(deb);
+                    Installer.installnormal(deb, _ip, _port, _password);
                 }
             }
             MessageBox.Show("Done!");
         }
 
         private void button7_Click(object sender, EventArgs e) {
-            Package p = Packages.SelectedItem as Package;
+            Package p;
+            try {
+                p = Packages.SelectedItem as Package;
+            } catch(System.NullReferenceException) {
+                MessageBox.Show("Please select a package");
+                return;
+            }
             DialogResult t = MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
             bool electra = (t == DialogResult.Yes);
-            string path = direc.Text + "/" + p.getdebname();
+            string path = _direc + "/" + p.getdebname();
             if (!File.Exists(path)) {
                 string url = ((RepoBox.SelectedItem as Repo).defaultsource ? p.debloc + "/" + p.filename : p.url);
-                p.download(direc.Text);
+                p.download(_direc);
             }
-            if (electra) installelectrasingle(new FileInfo(path));
+            if (electra) Installer.installelectrasingle(new FileInfo(path), _ip, _port, _password);
             else {
-                installnormal(new FileInfo(path));
+                Installer.installnormal(new FileInfo(path), _ip, _port, _password);
             }
+        }
+
+        private void host_TextChanged(object sender, EventArgs e) {
+            string[] safedata = { _ip, _port, "" };
+            File.WriteAllLines("tics/settings", safedata);
+        }
+
+        private void port_TextChanged(object sender, EventArgs e) {
+            string[] safedata = { _ip, _port, "" };
+            File.WriteAllLines("tics/settings", safedata);
+        }
+
+        private void settings_Click(object sender, EventArgs e) {
+            SettingsPopup popup = new SettingsPopup(_ip, _port, _password, _direc);
+            popup.ShowDialog();
+            _ip = popup.ip;
+            _port = popup.port;
+            _password = popup.password;
+            _direc = popup.debloc;
         }
 
         private void direc_TextChanged(object sender, EventArgs e) {
 
         }
 
-        private void label13_Click(object sender, EventArgs e) {
+        private void RefreshBar_Click(object sender, EventArgs e) {
 
         }
 
-        private void host_TextChanged(object sender, EventArgs e) {
-            string[] safedata = { host.Text, port.Text, "" };
-            File.WriteAllLines("tics/settings", safedata);
+        private void Depiction_Enter(object sender, EventArgs e) {
+
         }
 
-        private void port_TextChanged(object sender, EventArgs e) {
-            string[] safedata = { host.Text, port.Text, "" };
-            File.WriteAllLines("tics/settings", safedata);
+        private void label11_Click(object sender, EventArgs e) {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e) {
+
+        }
+
+        private void description_Click(object sender, EventArgs e) {
+
         }
     }
     public static class ExtensionMethods

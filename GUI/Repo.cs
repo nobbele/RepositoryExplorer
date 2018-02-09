@@ -13,6 +13,7 @@ namespace GUI
         //[XmlIgnore]
         public List<Package> sel;
 
+        public int version;
         public SerializableDictionary<string, Package> packages;
         public SerializableDictionaryString data;
         public string url;
@@ -24,10 +25,10 @@ namespace GUI
             
         }
         public Repo(string url, ProgressBar RefreshProgress, string srchdir = "", string debloc="") {
+            this.version = Main.reversion;
             this.debloc = debloc;
             this.srchdir = srchdir;
             if (this.debloc == "") this.debloc = url;
-            Console.WriteLine("Debloc: {0}", this.debloc);
             selected = new List<Package>();
             sel = new List<Package>();
             RefreshProgress.SetProgressNoAnimation(0);
@@ -90,7 +91,6 @@ namespace GUI
                                             // Initilize a dictionary with format name: packagedata
                 this.packages = new SerializableDictionary<string, Package>();
                 foreach (string package in contentarr) {
-                    Console.WriteLine("adding {0}", package);
                     if ((RefreshProgress.Value + (60 / contentarr.Length)) > 100) RefreshProgress.SetProgressNoAnimation(100);
                     else RefreshProgress.SetProgressNoAnimation((60 / contentarr.Length)); // 100
                                                                             // Initilize a Dictionary dataname: data
@@ -145,7 +145,7 @@ namespace GUI
             }
         }
         private void DownloadPackages(string dir, string srchdir = "") {
-                string dire = dir + (dir.EndsWith("/") ? "Packages" : "/Packages");
+            string dire = dir + (dir.EndsWith("/") ? "Packages" : "/Packages");
             if (!File.Exists(dire)) {
                 // Add fall back to Packages.gz if bz2 doesn't work
                 // Makes repo like beta.unlimapps.com and repo.lockhtml.com work
@@ -154,7 +154,7 @@ namespace GUI
                 try {
                     Helper.DecompressUrl(urle, dire);
                     File.Delete(dir + (dir.EndsWith("/") ? "Packages.bz2" : "/Packages.bz2"));
-                } catch (FileNotFoundException ex) {
+                } catch (FileNotFoundException) {
                     urle = urlto + "Packages.gz";
                     Helper.DecompressUrl(urle, dire, "gz");
                     File.Delete(dir + (dir.EndsWith("/") ? "Packages.gz" : "/Packages.gz"));

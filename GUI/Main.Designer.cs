@@ -51,15 +51,11 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.RefreshBar = new System.Windows.Forms.ProgressBar();
-            this.label11 = new System.Windows.Forms.Label();
             this.search = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.direc = new System.Windows.Forms.TextBox();
             this.defrep = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.RepoBox = new System.Windows.Forms.ListBox();
             this.RepInf = new System.Windows.Forms.GroupBox();
@@ -71,12 +67,9 @@
             this.Depiction = new System.Windows.Forms.GroupBox();
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
-            this.host = new System.Windows.Forms.TextBox();
-            this.password = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.port = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
+            this.settings = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.price = new System.Windows.Forms.Label();
             this.Info.SuspendLayout();
             this.RepInf.SuspendLayout();
             this.Depiction.SuspendLayout();
@@ -84,7 +77,7 @@
             // 
             // EnterRepo
             // 
-            this.EnterRepo.Location = new System.Drawing.Point(527, 630);
+            this.EnterRepo.Location = new System.Drawing.Point(93, 631);
             this.EnterRepo.Name = "EnterRepo";
             this.EnterRepo.Size = new System.Drawing.Size(207, 20);
             this.EnterRepo.TabIndex = 1;
@@ -92,9 +85,9 @@
             // 
             // Refresh
             // 
-            this.Refresh.Location = new System.Drawing.Point(1062, 629);
+            this.Refresh.Location = new System.Drawing.Point(604, 632);
             this.Refresh.Name = "Refresh";
-            this.Refresh.Size = new System.Drawing.Size(75, 20);
+            this.Refresh.Size = new System.Drawing.Size(65, 20);
             this.Refresh.TabIndex = 2;
             this.Refresh.Text = "Add";
             this.Refresh.UseVisualStyleBackColor = true;
@@ -102,10 +95,10 @@
             // 
             // RefreshProgress
             // 
-            this.RefreshProgress.Location = new System.Drawing.Point(740, 629);
+            this.RefreshProgress.Location = new System.Drawing.Point(306, 631);
             this.RefreshProgress.MarqueeAnimationSpeed = 1;
             this.RefreshProgress.Name = "RefreshProgress";
-            this.RefreshProgress.Size = new System.Drawing.Size(316, 20);
+            this.RefreshProgress.Size = new System.Drawing.Size(292, 20);
             this.RefreshProgress.TabIndex = 3;
             // 
             // Packages
@@ -175,6 +168,8 @@
             // 
             // Info
             // 
+            this.Info.Controls.Add(this.price);
+            this.Info.Controls.Add(this.label11);
             this.Info.Controls.Add(this.version);
             this.Info.Controls.Add(this.label14);
             this.Info.Controls.Add(this.URL);
@@ -195,7 +190,7 @@
             this.Info.Controls.Add(this.name);
             this.Info.Location = new System.Drawing.Point(816, 26);
             this.Info.Name = "Info";
-            this.Info.Size = new System.Drawing.Size(352, 219);
+            this.Info.Size = new System.Drawing.Size(380, 198);
             this.Info.TabIndex = 11;
             this.Info.TabStop = false;
             this.Info.Text = "Info";
@@ -212,7 +207,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(7, 107);
+            this.label14.Location = new System.Drawing.Point(6, 107);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(45, 13);
             this.label14.TabIndex = 20;
@@ -240,11 +235,12 @@
             // 
             // description
             // 
-            this.description.Location = new System.Drawing.Point(75, 120);
+            this.description.Location = new System.Drawing.Point(75, 133);
             this.description.Name = "description";
-            this.description.Size = new System.Drawing.Size(265, 96);
+            this.description.Size = new System.Drawing.Size(265, 54);
             this.description.TabIndex = 17;
             this.description.Text = "Description";
+            this.description.Click += new System.EventHandler(this.description_Click);
             // 
             // size
             // 
@@ -276,11 +272,12 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 120);
+            this.label7.Location = new System.Drawing.Point(6, 133);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(63, 13);
             this.label7.TabIndex = 13;
             this.label7.Text = "Description:";
+            this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // label5
             // 
@@ -312,7 +309,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(527, 614);
+            this.label8.Location = new System.Drawing.Point(90, 613);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(33, 13);
             this.label8.TabIndex = 12;
@@ -321,7 +318,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(737, 613);
+            this.label9.Location = new System.Drawing.Point(303, 613);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(56, 13);
             this.label9.TabIndex = 13;
@@ -336,23 +333,6 @@
             this.button1.Text = "Refresh";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // RefreshBar
-            // 
-            this.RefreshBar.Location = new System.Drawing.Point(93, 630);
-            this.RefreshBar.MarqueeAnimationSpeed = 1;
-            this.RefreshBar.Name = "RefreshBar";
-            this.RefreshBar.Size = new System.Drawing.Size(428, 23);
-            this.RefreshBar.TabIndex = 16;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(93, 614);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(71, 13);
-            this.label11.TabIndex = 17;
-            this.label11.Text = "Total Refresh";
             // 
             // search
             // 
@@ -373,9 +353,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(1174, 126);
+            this.button2.Location = new System.Drawing.Point(1202, 55);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(125, 23);
+            this.button2.Size = new System.Drawing.Size(128, 23);
             this.button2.TabIndex = 20;
             this.button2.Text = "Download All Selected";
             this.button2.UseVisualStyleBackColor = true;
@@ -383,7 +363,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(1305, 126);
+            this.button3.Location = new System.Drawing.Point(1202, 32);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(128, 23);
             this.button3.TabIndex = 21;
@@ -391,38 +371,19 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // direc
-            // 
-            this.direc.Location = new System.Drawing.Point(1174, 225);
-            this.direc.Name = "direc";
-            this.direc.Size = new System.Drawing.Size(178, 20);
-            this.direc.TabIndex = 24;
-            this.direc.Text = "debs";
-            this.direc.TextChanged += new System.EventHandler(this.direc_TextChanged);
-            // 
             // defrep
             // 
-            this.defrep.Location = new System.Drawing.Point(1143, 629);
+            this.defrep.Location = new System.Drawing.Point(675, 631);
             this.defrep.Name = "defrep";
-            this.defrep.Size = new System.Drawing.Size(112, 24);
+            this.defrep.Size = new System.Drawing.Size(116, 20);
             this.defrep.TabIndex = 25;
             this.defrep.Text = "Add Default Repo";
             this.defrep.UseVisualStyleBackColor = true;
             this.defrep.Click += new System.EventHandler(this.Defrep_Click);
             // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(1358, 222);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(75, 23);
-            this.button4.TabIndex = 26;
-            this.button4.Text = "Select folder";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(9, 45);
+            this.button5.Location = new System.Drawing.Point(9, 71);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 27;
@@ -446,9 +407,9 @@
             this.RepInf.Controls.Add(this.RepURL);
             this.RepInf.Controls.Add(this.RepNam);
             this.RepInf.Controls.Add(this.button5);
-            this.RepInf.Location = new System.Drawing.Point(1174, 26);
+            this.RepInf.Location = new System.Drawing.Point(1336, 26);
             this.RepInf.Name = "RepInf";
-            this.RepInf.Size = new System.Drawing.Size(259, 94);
+            this.RepInf.Size = new System.Drawing.Size(97, 104);
             this.RepInf.TabIndex = 29;
             this.RepInf.TabStop = false;
             this.RepInf.Text = "Repo Info";
@@ -495,11 +456,11 @@
             // 
             this.DepictionView.AllowNavigation = false;
             this.DepictionView.AllowWebBrowserDrop = false;
-            this.DepictionView.Location = new System.Drawing.Point(6, 19);
+            this.DepictionView.Location = new System.Drawing.Point(6, 10);
             this.DepictionView.MinimumSize = new System.Drawing.Size(20, 20);
             this.DepictionView.Name = "DepictionView";
             this.DepictionView.ScriptErrorsSuppressed = true;
-            this.DepictionView.Size = new System.Drawing.Size(632, 342);
+            this.DepictionView.Size = new System.Drawing.Size(632, 402);
             this.DepictionView.TabIndex = 30;
             this.DepictionView.WebBrowserShortcutsEnabled = false;
             this.DepictionView.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.DepictionView_DocumentCompleted);
@@ -507,17 +468,18 @@
             // Depiction
             // 
             this.Depiction.Controls.Add(this.DepictionView);
-            this.Depiction.Location = new System.Drawing.Point(816, 251);
+            this.Depiction.Location = new System.Drawing.Point(816, 230);
             this.Depiction.Name = "Depiction";
-            this.Depiction.Size = new System.Drawing.Size(644, 351);
+            this.Depiction.Size = new System.Drawing.Size(644, 418);
             this.Depiction.TabIndex = 31;
             this.Depiction.TabStop = false;
+            this.Depiction.Enter += new System.EventHandler(this.Depiction_Enter);
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(1174, 155);
+            this.button6.Location = new System.Drawing.Point(1202, 107);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(125, 23);
+            this.button6.Size = new System.Drawing.Size(128, 23);
             this.button6.TabIndex = 32;
             this.button6.Text = "Install All Selected";
             this.button6.UseVisualStyleBackColor = true;
@@ -525,7 +487,7 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(1305, 155);
+            this.button7.Location = new System.Drawing.Point(1202, 84);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(128, 23);
             this.button7.TabIndex = 33;
@@ -533,58 +495,34 @@
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
-            // host
+            // settings
             // 
-            this.host.Location = new System.Drawing.Point(1174, 199);
-            this.host.Name = "host";
-            this.host.Size = new System.Drawing.Size(141, 20);
-            this.host.TabIndex = 34;
-            this.host.TextChanged += new System.EventHandler(this.host_TextChanged);
+            this.settings.Location = new System.Drawing.Point(1202, 136);
+            this.settings.Name = "settings";
+            this.settings.Size = new System.Drawing.Size(231, 40);
+            this.settings.TabIndex = 40;
+            this.settings.Text = "Settings";
+            this.settings.UseVisualStyleBackColor = true;
+            this.settings.Click += new System.EventHandler(this.settings_Click);
             // 
-            // password
+            // label11
             // 
-            this.password.Location = new System.Drawing.Point(1321, 199);
-            this.password.Name = "password";
-            this.password.Size = new System.Drawing.Size(106, 20);
-            this.password.TabIndex = 35;
-            this.password.UseSystemPasswordChar = true;
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 120);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(34, 13);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "Price:";
+            this.label11.Click += new System.EventHandler(this.label11_Click);
             // 
-            // label13
+            // price
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(1174, 183);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(58, 13);
-            this.label13.TabIndex = 36;
-            this.label13.Text = "IP Address";
-            this.label13.Click += new System.EventHandler(this.label13_Click);
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(1318, 183);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(53, 13);
-            this.label17.TabIndex = 37;
-            this.label17.Text = "Password";
-            // 
-            // port
-            // 
-            this.port.Location = new System.Drawing.Point(1433, 199);
-            this.port.Name = "port";
-            this.port.Size = new System.Drawing.Size(27, 20);
-            this.port.TabIndex = 38;
-            this.port.Text = "22";
-            this.port.TextChanged += new System.EventHandler(this.port_TextChanged);
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(1430, 183);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(26, 13);
-            this.label18.TabIndex = 39;
-            this.label18.Text = "Port";
+            this.price.AutoSize = true;
+            this.price.Location = new System.Drawing.Point(42, 120);
+            this.price.Name = "price";
+            this.price.Size = new System.Drawing.Size(31, 13);
+            this.price.TabIndex = 23;
+            this.price.Text = "Price";
             // 
             // Main
             // 
@@ -592,26 +530,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1472, 660);
-            this.Controls.Add(this.label18);
-            this.Controls.Add(this.port);
-            this.Controls.Add(this.label17);
-            this.Controls.Add(this.label13);
-            this.Controls.Add(this.password);
-            this.Controls.Add(this.host);
+            this.Controls.Add(this.settings);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.Depiction);
             this.Controls.Add(this.RepInf);
             this.Controls.Add(this.RepoBox);
-            this.Controls.Add(this.button4);
             this.Controls.Add(this.defrep);
-            this.Controls.Add(this.direc);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.search);
-            this.Controls.Add(this.label11);
-            this.Controls.Add(this.RefreshBar);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -661,17 +590,13 @@
         private System.Windows.Forms.LinkLabel URL;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.ProgressBar RefreshBar;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox search;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label version;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.TextBox direc;
         private System.Windows.Forms.Button defrep;
-        private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.ListBox RepoBox;
         private System.Windows.Forms.GroupBox RepInf;
@@ -683,12 +608,9 @@
         private System.Windows.Forms.GroupBox Depiction;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.TextBox host;
-        private System.Windows.Forms.TextBox password;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.TextBox port;
-        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button settings;
+        private System.Windows.Forms.Label price;
+        private System.Windows.Forms.Label label11;
     }
 }
 
