@@ -20,7 +20,7 @@ namespace GUI
                 wc.Headers.Add("X-Machine", device);
                 wc.Headers.Add("X-Unique-Id", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 wc.Headers.Add("X-Firmware", "10.1.1");
-                wc.Headers.Add("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60 Safari/602.1 Cydia/1.1.30 CyF/1349.70");
+                wc.Headers.Add("User-Agent", "Telesphoreo APT-HTTP/1.0.592");
                 wc.DownloadFile(file, name);
             }
             string localpath = Directory.GetCurrentDirectory() + "/" + name;
@@ -36,7 +36,7 @@ namespace GUI
                 wc.Headers.Add("X-Machine", device);
                 wc.Headers.Add("X-Unique-Id", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 wc.Headers.Add("X-Firmware", "10.1.1");
-                wc.Headers.Add("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 10_2 like Mac OS X) AppleWebKit/603.3.8 (KHTML, like Gecko) Mobile/14G60 Safari/602.1 Cydia/1.1.30 CyF/1349.70");
+                wc.Headers.Add("User-Agent", "Telesphoreo APT-HTTP/1.0.592");
                 wc.DownloadFile(file, name);
             }
             string localpath = Directory.GetCurrentDirectory() + "/" + name;
@@ -99,7 +99,11 @@ namespace GUI
                 FileStream packagesbz2 = (FileStream)Helper.InfoToStream(packagesfile);
 
                 FileStream packages = File.Create(localfile);
-                ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(packagesbz2, packages, true);
+                try {
+                    ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(packagesbz2, packages, true);
+                } catch(ICSharpCode.SharpZipLib.BZip2.BZip2Exception) {
+                    Helper.DownloadWithName(url, "Packages");
+                }
             }
             if (type == "gz") {
                 string gzfile = localfile + ".gz";

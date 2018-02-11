@@ -33,44 +33,49 @@ namespace GUI
             sel = new List<Package>();
             RefreshProgress.SetProgressNoAnimation(0);
             this.url = url;
-
-            // Downloads Release file from url, reads it and deletes it
-            string releasefile = Helper.ReadUrl(url, "Release");
-
-
-
-            RefreshProgress.SetProgressNoAnimation(5); // 5
-
-            // different OSes uses different endings so this splits each line into a element of an array
-            string[] split = releasefile.Split(new String[] { "\r\n" }, StringSplitOptions.None);
-            if (split.Length < 2) split = releasefile.Split('\n');
-            if (split.Length < 2) split = releasefile.Split('\r');
-
-            RefreshProgress.SetProgressNoAnimation(5); // 10
-
-            // Intilize a dictionary for repo data 
-            this.data = new SerializableDictionaryString();
-            // This will go through each line and place x of "x: y" in key and y in value
-            foreach (string data in split) {
-                string[] keyval = data.Split(new String[] { ": " }, StringSplitOptions.None);
-                if (keyval.Length < 2) break;
-                this.data.Add(keyval[0], keyval[1]);
-            }
-            RefreshProgress.SetProgressNoAnimation(5); // 15
-
-            this.data.TryGetValue("Label", out this.name); // Grabs repo name and puts it in this.name
-            this.name = this.name.Replace('/', '.');
-            string dir = this.name; // Repo directory
-            if (dir == null) return;
-            string to = dir + (dir.EndsWith("/") ? "Release" : "/Release");
-            if (File.Exists(to)) {
-                File.Delete(to);
-            }
+            this.name = url.Replace("http://", "").Replace("https://", "");
+            string dir = this.name;
             try {
-                File.Move("Release", to);
-            } catch (DirectoryNotFoundException e) {
-                Directory.CreateDirectory(dir);
-                File.Move("Release", to);
+                // Downloads Release file from url, reads it and deletes it
+                string releasefile = Helper.ReadUrl(url, "Release");
+
+
+
+                RefreshProgress.SetProgressNoAnimation(5); // 5
+
+                // different OSes uses different endings so this splits each line into a element of an array
+                string[] split = releasefile.Split(new String[] { "\r\n" }, StringSplitOptions.None);
+                if (split.Length < 2) split = releasefile.Split('\n');
+                if (split.Length < 2) split = releasefile.Split('\r');
+
+                RefreshProgress.SetProgressNoAnimation(5); // 10
+
+                // Intilize a dictionary for repo data 
+                this.data = new SerializableDictionaryString();
+                // This will go through each line and place x of "x: y" in key and y in value
+                foreach (string data in split) {
+                    string[] keyval = data.Split(new String[] { ": " }, StringSplitOptions.None);
+                    if (keyval.Length < 2) break;
+                    this.data.Add(keyval[0], keyval[1]);
+                }
+                RefreshProgress.SetProgressNoAnimation(5); // 15
+
+                this.data.TryGetValue("Label", out this.name); // Grabs repo name and puts it in this.name
+                this.name = this.name.Replace('/', '.');
+                dir = this.name; // Repo directory
+                if (dir == null) return;
+                string to = dir + (dir.EndsWith("/") ? "Release" : "/Release");
+                if (File.Exists(to)) {
+                    File.Delete(to);
+                }
+                try {
+                    File.Move("Release", to);
+                } catch (DirectoryNotFoundException e) {
+                    Directory.CreateDirectory(dir);
+                    File.Move("Release", to);
+                }
+            } catch (System.Net.WebException) {
+                MessageBox.Show("No Release file");
             }
             if (!(dir == null)) {
                 Console.WriteLine("Downloading packages...");
