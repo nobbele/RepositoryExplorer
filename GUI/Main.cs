@@ -327,12 +327,14 @@ namespace GUI
             SplashScreen splash = new SplashScreen();
             splash.Show();
             splash.Select();
+
             RepoBox.ClearSelected();
             Packages.ClearSelected();
 
             rep = new Repo();
             boxes = new Dictionary<string, CheckedListBox>();
             repos = new List<Repo>();
+
             selected = new Dictionary<string, Package>();
             string[] repofiles = Directory.GetFiles(Environment.CurrentDirectory, "*.repo");
             Parallel.ForEach(repofiles, (r) => {
