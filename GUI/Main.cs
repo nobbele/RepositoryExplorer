@@ -66,24 +66,20 @@ namespace GUI
         private void copyitems() {
             if (rep.packages != null) {
                 boxes.TryGetValue(rep.name, out CheckedListBox temp);
-
-                if (!(temp == null)) Packages.Items.AddRange(temp.Items);
-                else {
+                if (!(temp == null)) {
+                    foreach (Package p in temp.Items) {
+                        if (p != null && p.ToString().ToLower().Contains(search.Text.ToLower())) {
+                            int i = Packages.Items.Add(p);
+                            if (p.selected) {
+                                Packages.SetItemChecked(i, true);
+                            }
+                        }
+                    }
+                } else {
                     MessageBox.Show("Could not get value rep.name from boxes");
                     foreach (CheckedListBox t in boxes.Values) {
                         MessageBox.Show(t.ToString());
                     }
-                }
-
-                copyitemspart2();
-            }
-        }
-        private void copyitemspart2() {
-            for (int i = 0; i < Packages.Items.Count; i++) {
-                Package pak = (Package)Packages.Items[i];
-                if (pak.selected) {
-                    int ind = Packages.Items.IndexOf(pak);
-                    Packages.SetItemChecked(ind, true);
                 }
             }
         }
