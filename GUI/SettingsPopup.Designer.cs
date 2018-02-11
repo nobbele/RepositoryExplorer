@@ -26,14 +26,13 @@
         /// </summary>
         private void InitializeComponent() {
             this.ipfield = new System.Windows.Forms.TextBox();
-            this.passfield = new System.Windows.Forms.TextBox();
             this.portfield = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.deblocation = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.electra = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // ipfield
@@ -43,14 +42,6 @@
             this.ipfield.Size = new System.Drawing.Size(100, 20);
             this.ipfield.TabIndex = 0;
             this.ipfield.TextChanged += new System.EventHandler(this.ipfield_TextChanged);
-            // 
-            // passfield
-            // 
-            this.passfield.Location = new System.Drawing.Point(76, 54);
-            this.passfield.Name = "passfield";
-            this.passfield.Size = new System.Drawing.Size(100, 20);
-            this.passfield.TabIndex = 1;
-            this.passfield.TextChanged += new System.EventHandler(this.passfield_TextChanged);
             // 
             // portfield
             // 
@@ -77,15 +68,6 @@
             this.label2.Size = new System.Drawing.Size(26, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Port";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 54);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Password";
             // 
             // deblocation
             // 
@@ -114,19 +96,29 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // electra
+            // 
+            this.electra.AutoSize = true;
+            this.electra.Location = new System.Drawing.Point(15, 54);
+            this.electra.Name = "electra";
+            this.electra.Size = new System.Drawing.Size(59, 17);
+            this.electra.TabIndex = 9;
+            this.electra.Text = "Electra";
+            this.electra.UseVisualStyleBackColor = true;
+            this.electra.CheckedChanged += new System.EventHandler(this.electra_CheckedChanged);
+            // 
             // SettingsPopup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.electra);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.deblocation);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.portfield);
-            this.Controls.Add(this.passfield);
             this.Controls.Add(this.ipfield);
             this.Name = "SettingsPopup";
             this.Text = "SettingsPopup";
@@ -139,13 +131,12 @@
         #endregion
 
         private System.Windows.Forms.TextBox ipfield;
-        private System.Windows.Forms.TextBox passfield;
         private System.Windows.Forms.TextBox portfield;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox deblocation;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox electra;
     }
 }

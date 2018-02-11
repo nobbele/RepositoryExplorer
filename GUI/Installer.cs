@@ -13,7 +13,8 @@ namespace GUI
     {
         //Credits to u/josephwalden for creating the tic.exe program
         private static void setsettings(string[] settings) {
-            File.WriteAllLines("tics/settings", settings);
+            File.Delete("tics\\settings");
+            File.WriteAllLines("tics\\settings", settings);
         }
         private static string join(List<FileInfo> s, string i) {
             string temp = "";
@@ -23,9 +24,15 @@ namespace GUI
             return temp;
         }
         private static void electra(string deb, string[] data) {
+            Console.WriteLine("Installing electra tweak now!");
             setsettings(data);
-            Process.Start("tics/tic.exe", "dont-update " + "install " + deb);
-            File.Delete("tics/settings");
+            ProcessStartInfo proc = new ProcessStartInfo();
+            proc.Arguments = "dont-update " + "install " + deb;
+            proc.FileName = "tics\\tic.exe";
+            proc.FileName = Environment.CurrentDirectory + "\\" + proc.FileName;
+            proc.WorkingDirectory = Environment.CurrentDirectory + "\\tics";
+            Console.WriteLine(proc.ToString());
+            Process.Start(proc);
             string[] safedata = { data[0], data[1], "" };
             setsettings(safedata);
         }
@@ -33,16 +40,16 @@ namespace GUI
             string[] data = { host, port, password };
             electra(join(debs, " "), data);
         }
-        public static void installelectrasingle(FileInfo deb, string host, string port, string password) {
+        public static void installelectrasingle(string path, string host, string port, string password) {
             string[] data = { host, port, password };
-            electra(deb.FullName, data);
+            electra(path, data);
         }
         public static string[] getsettings() {
-            if (!File.Exists("tics/settings")) {
-                string[] def = new string[3];
-                File.WriteAllLines("tics/settings", def);
+            if (!File.Exists("tics\\settings")) {
+                string[] def = new string[4];
+                File.WriteAllLines("tics\\settings", def);
             }
-            return File.ReadAllLines("tics/settings"); //get ssh settings
+            return File.ReadAllLines("tics\\settings"); //get ssh settings
         }
         public static void installnormal(FileInfo deb, string host, string port, string password) {
             int p = 22;

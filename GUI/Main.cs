@@ -20,7 +20,7 @@ namespace GUI
         Repo rep;
         Dictionary<string, CheckedListBox> boxes;
         string _ip;
-        string _password;
+        bool _electra;
         string _port;
         string _direc = "debs";
         public Main() {
@@ -446,9 +446,6 @@ namespace GUI
             string[] data = Installer.getsettings();
             _ip = data[0];
             _port = data[1];
-            _ip = data[0];
-            _port = data[1];
-            _password = "";
         }
 
         private void button4_Click(object sender, EventArgs e) {
@@ -485,12 +482,16 @@ namespace GUI
         private void DepictionView_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e) {
             DepictionView.AllowNavigation = false;
         }
-        
-        
+        private string inputpopup(string question, bool ispassword = false) {
+            InputPopup popup = new InputPopup(question, ispassword);
+            popup.ShowDialog();
+            string answer = popup.answer.Text;
+            Console.WriteLine(answer);
+            return answer;
+        }     
         //Install all checked in packages
         private void button6_Click(object sender, EventArgs e) {
-            DialogResult t =  MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
-            bool electra = (t == DialogResult.Yes);
+            string _password = inputpopup("Root password?", true);
             List<FileInfo> debs = new List<FileInfo>();
             foreach (Repo re in repos) {
                 if (re.sel.Count > 0) {
@@ -509,7 +510,7 @@ namespace GUI
                     }
                 }
             }
-            if (electra) Installer.installelectra(debs, _ip, _port, _password);
+            if (_electra) Installer.installelectra(debs, _ip, _port, _password);
             else {
                 foreach (FileInfo deb in debs) {
                     Installer.installnormal(deb, _ip, _port, _password);
@@ -519,43 +520,32 @@ namespace GUI
         }
 
         private void button7_Click(object sender, EventArgs e) {
+            string _password = inputpopup("Root password?", true);
             Package p;
             try {
                 p = Packages.SelectedItem as Package;
+                string path = _direc + "/" + p.getdebname();
+                if (!File.Exists(path)) {
+                    string url = ((RepoBox.SelectedItem as Repo).defaultsource ? p.debloc + "/" + p.filename : p.url);
+                    p.download(_direc);
+                }
+                if (_electra) Installer.installelectrasingle(path, _ip, _port, _password);
+                else {
+                    Installer.installnormal(new FileInfo(path), _ip, _port, _password);
+                }
             } catch(System.NullReferenceException) {
                 MessageBox.Show("Please select a package");
                 return;
             }
-            DialogResult t = MessageBox.Show("Are you using the Electra jailbreak?", "Electra?", MessageBoxButtons.YesNoCancel);
-            bool electra = (t == DialogResult.Yes);
-            string path = _direc + "/" + p.getdebname();
-            if (!File.Exists(path)) {
-                string url = ((RepoBox.SelectedItem as Repo).defaultsource ? p.debloc + "/" + p.filename : p.url);
-                p.download(_direc);
-            }
-            if (electra) Installer.installelectrasingle(new FileInfo(path), _ip, _port, _password);
-            else {
-                Installer.installnormal(new FileInfo(path), _ip, _port, _password);
-            }
-        }
-
-        private void host_TextChanged(object sender, EventArgs e) {
-            string[] safedata = { _ip, _port, "" };
-            File.WriteAllLines("tics/settings", safedata);
-        }
-
-        private void port_TextChanged(object sender, EventArgs e) {
-            string[] safedata = { _ip, _port, "" };
-            File.WriteAllLines("tics/settings", safedata);
         }
 
         private void settings_Click(object sender, EventArgs e) {
-            SettingsPopup popup = new SettingsPopup(_ip, _port, _password, _direc);
+            SettingsPopup popup = new SettingsPopup(_ip, _port, _electra, _direc);
             popup.ShowDialog();
             _ip = popup.ip;
             _port = popup.port;
-            _password = popup.password;
             _direc = popup.debloc;
+            _electra = popup.electrabool;
         }
 
         private void direc_TextChanged(object sender, EventArgs e) {

@@ -14,13 +14,13 @@ namespace GUI
     {
         public string ip;
         public string port;
-        public string password;
+        public bool electrabool;
         public string debloc;
-        public SettingsPopup(string ipset, string portset, string passwordset, string deblocset) {
+        public SettingsPopup(string ipset, string portset, bool electraset, string deblocset) {
             InitializeComponent();
             ipfield.Text = ipset;
             portfield.Text = portset;
-            passfield.Text = passwordset;
+            electra.Checked = electraset;
             deblocation.Text = deblocset;
         }
 
@@ -35,10 +35,6 @@ namespace GUI
             port = portfield.Text;
         }
 
-        private void passfield_TextChanged(object sender, EventArgs e) {
-            password = passfield.Text;
-        }
-
         private void deblocation_TextChanged(object sender, EventArgs e) {
             debloc = deblocation.Text;
         }
@@ -47,6 +43,10 @@ namespace GUI
             FolderBrowserDialog f = new FolderBrowserDialog();
             f.ShowDialog();
             debloc = f.SelectedPath;
+        }
+
+        private void electra_CheckedChanged(object sender, EventArgs e) {
+            electrabool = electra.Checked;
         }
     }
 }
